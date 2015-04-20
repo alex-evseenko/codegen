@@ -1,0 +1,9 @@
+compile
+help
+exit
+publish-local
+clean
+compile
+clean
+compile
+exit
