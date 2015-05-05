@@ -1,25 +1,29 @@
-adal codegen
-============
-
 Abstract Declarative Application Language -- Code Generation DSL
-----------------------------------------------------------------
+===============================================================
 
-
-Implementing of target platform code generation based on another one DSL consists from Scala classes described below.
+Java-classes generation based on dynamic composition of code-fragments into methods and classes.
+Code generation DSL consists of Scala classes described below.
 
 Code
 ----
 
-Contains anything that could be treated as target code. Code trait is immutable, initializing is possible either via extending and overriding of holder method or using implicit StringContext class. Overriding makes sense when target code depends on some closures:
+Presents any fragment of code.
+Contains anything that could be treated as target code. Code trait is immutable, initializing is possible either via extending and overriding of holder method or using implicit StringContext class.
+Overriding makes sense when target code is a closure that depends on some values:
 ```
 val expr = new Code {
-  Override def holder = someUserInput + ";"
+  override def holder = someUserInput + ";"
 }
 ```
 
-After someUserInput would be defined as a string lambda code generation returns something like this:
+The same is possible using lambda definition of StringContext:
 ```
-~expr === "\"Barselona, Spain\";"
+$"""$someUserInput;"""
+```
+
+After someUserInput would be defined as a string lambda code generation (by ~ operator) returns something like this:
+```
+~expr === "Barselona, Spain;"
 ```
 
 If code doesn't depend on future states ie internally immutable then StringContext implicit class (defined in companion Code object) comes in handy:
@@ -29,7 +33,7 @@ val expr = code""""$city, $country";"""
 
 If city="Kiev", country="Ukraine" generation produces target code:
 ```
-~expr === "\"Kiev, Ukraine\";"
+~expr === "Kiev, Ukraine;"
 ```
 
 Type

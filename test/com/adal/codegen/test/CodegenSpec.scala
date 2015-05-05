@@ -60,7 +60,7 @@ code"""
     <~ Import(AndroidContentIntent)
   )
 
-  val getId = Method('getId, JavaLong)(
+  val getId = Private::Method('getId, JavaLong)(
       code"""return getIntent().getLongExtra("ID", -1);"""
   )
 
@@ -80,6 +80,7 @@ $"""
   activity += listView
   activity += onCreate
   activity += doActivate
+  activity += getId
 println(activity.holder)
 
 /*  def imports =
