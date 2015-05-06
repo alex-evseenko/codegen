@@ -8,7 +8,7 @@ Code
 ----
 
 Presents any fragment of code.
-Contains anything that could be treated as target code. Code trait is immutable, initializing is possible either via extending and overriding of `holder` method or using implicit `StringContext` implementation.
+Contains anything that could be treated as target code. Trait `Code` is immutable, initializing is possible either via extending and overriding of `holder` method or using implicit `StringContext` implementation.
 Overriding makes sense when target code is a closure that depends on some values:
 ```
 val expr = new Code {
@@ -31,7 +31,7 @@ It's also possible to generate a code fragment without lambda, i.e. immediately 
 val expr = code""""$city, $country";"""
 ```
 
-If city="Kiev", country="Ukraine" generation produces target code:
+If `city = "Kiev"`, `country = "Ukraine"` generation produces target code:
 ```
 ~expr === "Kiev, Ukraine;"
 ```
