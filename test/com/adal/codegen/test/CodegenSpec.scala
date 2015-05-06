@@ -66,7 +66,7 @@ code"""
 
   val onCreate = Public::Method('onCreate, 'savedInstanceState -> AndroidOsBundle, JavaVoid)(
 $"""
-    super(savedInstanceState);
+    super.onCreate(savedInstanceState);
     setContentView(R.layout.${activity.sName});
     // dynamic content
     ${activity.propsInit}
