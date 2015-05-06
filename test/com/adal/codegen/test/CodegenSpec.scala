@@ -69,7 +69,7 @@ $"""
     super(savedInstanceState);
     setContentView(R.layout.${activity.sName});
     // dynamic content
-    ${activity.propsDecl}
+    ${activity.propsInit}
     ${~doActivate(getId())};
 """)
 

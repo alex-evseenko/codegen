@@ -55,7 +55,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   def propsDecl = _props.foldLeft("")((a, p) => a+p.decl+Code.CRLF)
 
-  def propsInit = _props.foldLeft("")((a, p) => a+(~p)+Code.CRLF)
+  def propsInit = _props.foldLeft("")((a, p) => a+p.init+Code.CRLF)
 
   def +=(p: Property) = {
     _props += p
@@ -75,11 +75,11 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   override def holder =
 s"""
-${if (pkg.isDefined) "package "+pkgName else ""}
+${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
 $imports
 
-class $sName${if (base.name != 'Object) " extends "+base.sName} {
+public class $sName${if (base.name != 'Object) " extends "+base.sName} {
   $propsDecl
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }

@@ -48,6 +48,8 @@ class Property(val sym: Symbol, override val typeOf: Type) extends Value {
    */
   def decl = s"""private ${typeOf.sName} $name;"""
 
+  def init = s"""$name = (${typeOf.sName}) findViewById(R.id.$name);"""
+
   override def code = code"""$name"""
 
   override def toString = name
