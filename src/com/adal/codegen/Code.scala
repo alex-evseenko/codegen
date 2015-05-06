@@ -175,6 +175,10 @@ object Code {
 
   type LCode = () => Code
 
+  implicit def value_to_lcode(v: Value) = () => v.code ++ code";"
+
+  implicit def entry_to_lcode(entry: (Symbol, Value)) = entry._1 -> {() => entry._2.code ++ code";"}
+
   implicit def byname_to_noarg[a](a: => a) = () => a
 
   implicit class LambdaCodeHelper(val sc: StringContext) extends AnyVal {

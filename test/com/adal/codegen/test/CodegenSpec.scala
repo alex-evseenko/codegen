@@ -25,7 +25,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
   class apply its default constructor ${~Class('adal, 'Test)() === "new Test()"}
   class contains methods list 	${methods}
 
-  import's type defined         ${ Import("com.foo.Bar")() === "Bar" }
+  import's type defined         ${Import("com.foo.Bar")() === "Bar"}
   import's uniqueness           ${importsUniqueness}
   imports generate properly     {onItemClick.imports === s""import android.widget.AdapterView;${Code.CRLF}import android.view.View;${Code.CRLF}""}
 
@@ -68,9 +68,6 @@ code"""
 $"""
     super.onCreate(savedInstanceState);
     setContentView(R.layout.${activity.sName});
-    // dynamic content
-    ${activity.propsInit}
-    ${~doActivate(getId())};
 """)
 
 //  listView('setOnItemClickListener, onItemClickListener())
@@ -79,6 +76,14 @@ $"""
   activity += addressLbl
   activity += listView
   activity += onCreate
+  // dynamically create method implementation 
+  onCreate += 'Code ->
+$"""
+    // dynamic content
+    ${activity.propsInit}
+"""
+  onCreate += 'Code -> doActivate(getId())
+
   activity += doActivate
   activity += getId
 println(activity.holder)
@@ -104,6 +109,7 @@ println(activity.holder)
   
     super.onCreate(savedInstanceState);
     setContentView(R.layout.MyActivity);
+
     // dynamic content
 """) &&
   onCreate.holder.contains("doActivate(getId());")
