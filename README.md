@@ -1,14 +1,14 @@
 Abstract Declarative Application Language -- Code Generation DSL
 ===============================================================
 
-Java-classes generation based on dynamic composition of code-fragments into methods and classes.
-Code generation DSL consists of Scala classes described below.
+Code Generation DSL (Codegen DSL or just Codegen) is a meta-programming framework that allows generating of Java-classes based on dynamic composition of fragments of code into methods and classes.
+Codegen DSL consists of Scala classes described below.
 
 Code
 ----
 
 Presents any fragment of code.
-Contains anything that could be treated as target code. Code trait is immutable, initializing is possible either via extending and overriding of holder method or using implicit StringContext class.
+Contains anything that could be treated as target code. Code trait is immutable, initializing is possible either via extending and overriding of `holder` method or using implicit `StringContext` implementation.
 Overriding makes sense when target code is a closure that depends on some values:
 ```
 val expr = new Code {
@@ -16,17 +16,17 @@ val expr = new Code {
 }
 ```
 
-The same is possible using lambda definition of StringContext:
+The same is possible using lambda definition from the `StringContext`:
 ```
-$"""$someUserInput;"""
+val expr = $"""$someUserInput;"""
 ```
 
-After someUserInput would be defined as a string lambda code generation (by ~ operator) returns something like this:
+After `someUserInput` would be defined as a string the lambda code generation (by `~ operator`) returns something like this:
 ```
 ~expr === "Barselona, Spain;"
 ```
 
-If code doesn't depend on future states ie internally immutable then StringContext implicit class (defined in companion Code object) comes in handy:
+It's also possible to generate a code fragment without lambda, i.e. immediately when `expr` defined (in prediction that dependents `city`, `country` have already defined in moment of `expr` initialized):
 ```
 val expr = code""""$city, $country";"""
 ```
