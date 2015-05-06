@@ -102,7 +102,7 @@ println(activity.holder)
     onCreate.holder.contains(
 """public void onCreate(Bundle savedInstanceState) {
   
-    super(savedInstanceState);
+    super.onCreate(savedInstanceState);
     setContentView(R.layout.MyActivity);
     // dynamic content
 """) &&
