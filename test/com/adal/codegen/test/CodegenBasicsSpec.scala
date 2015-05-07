@@ -180,8 +180,8 @@ Methods are callable as well:
 avoidIdentation(
 """setOnItemClickListener(
 new AdapterView.OnItemClickListener() {
-  public void onItemClick() {}
-
+  public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
+}
 }
 )""")
   }
@@ -247,8 +247,8 @@ Property is a Value:
     avoidIdentation(
 """listView.setOnItemClickListener(
 new AdapterView.OnItemClickListener() {
-  public void onItemClick() {}
-
+  public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
+}
 }
 )""")
   }

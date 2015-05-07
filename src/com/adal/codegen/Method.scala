@@ -56,9 +56,11 @@ object Method {
 class Method(name: Symbol, _params: Parameter*)
   extends CleanMethod(name, Type(_params): _*) with SectionedCode {
   // define default name of params
-  for (i <- 0 to formals.size-1) {
-    if (formals(i).name == null) {
-      formals(i).name = Symbol("arg" + (i+1))
+// FIXME formals.size == 0
+if (_params.size > 1)
+  for (i <- 0 to (_params.take(_params.size - 1)).size-1) {
+    if (_params(i).name == null) {
+      _params(i).name = Symbol("arg" + (i+1))
     }
   }
 

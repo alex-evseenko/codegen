@@ -88,16 +88,16 @@ public class $sName${if (base.name != 'Object) " extends "+base.sName} {
 }
 
 
-class AnonymousClass(base: Type)extends Class(base.pkg, base.name, base) {
-  // copy a base type to this
-  base.methodsList.foreach(this += _)
+class AnonymousClass(base: Type) extends Class(base.pkg, base.name, base) {
+  // copy a base type methods to this with an implementation
+  base.methodsList.foreach(m => this += Public::Method(m.name, m.params: _*))
 
   def apply() = new VEval(this, this)
 
   override def holder =
 s"""
 new $sName() {
-  ${methodsList.foldLeft("")((a, m) => a + "public "+m.typeOf.sName+" "+ m.sName +"() {}" + CRLF)}
+  ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
 """
   

@@ -357,7 +357,7 @@ class Parameter(var name: Symbol, val typeOf: Type) {
   def this(entry: (Symbol, Type)) = this(entry._1, entry._2)
   def this(typ: Type) = this(null, typ)
 
-  def sName = name.name
+  def sName = if (name != null) name.name else ""
 
   override def toString = (name -> typeOf).toString
 }

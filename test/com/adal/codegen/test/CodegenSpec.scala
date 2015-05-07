@@ -70,7 +70,6 @@ $"""
     setContentView(R.layout.${activity.sName});
 """)
 
-//  listView('setOnItemClickListener, onItemClickListener())
 //  onItemClickListener += onItemClick^doRefresh
 
   activity += addressLbl
@@ -82,6 +81,7 @@ $"""
     // dynamic content
     ${activity.propsInit}
 """
+  onCreate += 'Code -> listView('setOnItemClickListener, onItemClickListener())
   onCreate += 'Code -> doActivate(getId())
 
   activity += doActivate
