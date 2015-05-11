@@ -27,11 +27,11 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 
   import's type defined         ${Import("com.foo.Bar")() === "Bar"}
   import's uniqueness           ${importsUniqueness}
-  imports generate properly     {onItemClick.imports === s""import android.widget.AdapterView;${Code.CRLF}import android.view.View;${Code.CRLF}""}
+  imports generate properly     onItemClick.imports === s""import android.widget.AdapterView;Code.CRLFimport android.view.View;Code.CRLF""
 
-  property is a class field     {propertyIsField}}
-  property contains listeners   {propertyContainsListeners}
-  property calls a method       {propertyCallsMethod}
+  property is a class field     $propertyIsField
+  property contains listeners   $propertyContainsListeners
+  property calls a method       $propertyCallsMethod
 """
 
 
@@ -137,26 +137,26 @@ println(activity.holder)
   }
 
   //----- Property's operations -----
-/*
+
   def propertyIsField =
-    clazz.propsList.contains(listView) &&
-    clazz.holder.contains("private ListView listView;")
-
-  def propertyContainsListeners = {
-    val listView = Property("listView", "android.widget.ListView")
-    val setOnItemClickListener = new Caller("setOnItemClickListener") {
-      this <~ Import("android.widget.AdapterView.OnItemClickListener")
-
-      override def signature = s"""$name(OnItemClickListener)"""
-
-      override def caller = s"""$name(someParam)"""
-    }
-
-    ((listView^setOnItemClickListener)+";").contains("listView.setOnItemClickListener(someParam);")
-  }
+    activity.propsList.contains(listView) &&
+    activity.holder.contains("private ListView listView;")
 
   def propertyCallsMethod =
-    clazz.holder.contains(listView.name + "." + setOnItemClickListener.name)
-*/
+    activity.holder.contains(listView.name + ".setOnItemClickListener(")
+
+  def propertyContainsListeners =
+    avoidIdentation(~onItemClickListener) ===
+      avoidIdentation(
+"""
+new AdapterView.OnItemClickListener() {
+  
+public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
+  doRefresh(getId());doActivate(arg4);
+}
+
+
+}
+""")
 
 }
