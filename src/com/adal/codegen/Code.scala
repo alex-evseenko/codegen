@@ -141,6 +141,8 @@ object AndroidWidgetAdapterViewOnItemClickListener extends AndroidWidgetAdapterV
 object Code {
   val CRLF = System.getProperty("line.separator") //"\r\n" for Win
 
+  implicit def exprParamWrapper(expr: Parameter) = new EParam(expr)
+
   implicit def exprBooleanWrapper(expr: Boolean) = new EBoolean(expr)
 
   implicit def exprIntWrapper(expr: Int) = new EInt(expr)
@@ -366,7 +368,7 @@ class Parameter(var name: Symbol, val typeOf: Type) {
 /**
  * Callable returns a new value of type which the last arg is.
  */
-trait Callable extends Code {
+trait Callable extends SectionedCode {
   val name: Symbol
 
   def sName = name.name
@@ -444,6 +446,12 @@ abstract class ValueExpr[T](val expr: T) extends Value {
     expr == (that.asInstanceOf[ValueExpr[T]]).expr
 
   override def hashCode: Int = expr.hashCode()
+}
+
+case class EParam(override val expr: Parameter) extends ValueExpr(expr) {
+  override def typeOf = expr.typeOf
+
+  override def code = code"${expr.sName}"
 }
 
 case class EBoolean(override val expr: Boolean) extends ValueExpr(expr) {

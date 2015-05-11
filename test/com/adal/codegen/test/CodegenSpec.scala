@@ -43,9 +43,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 
   val onItemClickListener = new AnonymousClass(AndroidWidgetAdapterViewOnItemClickListener)
 
-  val onItemClick = Public::Method('onItemClick, 'parent->AndroidWidgetAdapterView, 'view->AndroidViewView, 'position->JavaInt, 'id->JavaLong, JavaVoid)
-
-  val doRefresh = Method("doRefresh", 'id -> JavaLong, JavaVoid)(
+  val doRefresh = Private::Method("doRefresh", 'id -> JavaLong, JavaVoid)(
         code"""${addressLbl.name}.setText("Selected id: "+id);"""
       )
 
@@ -53,7 +51,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 code"""
     final Bundle bundle = new Bundle();
     bundle.putLong("ID", id);
-    final Intent intent = new Intent(this, ${activity.sName}.class);
+    final Intent intent = new Intent(this, EditItemActivity.class);
     intent.putExtras(bundle);
     startActivity(intent);
 """ <~ Import(AndroidOsBundle)
@@ -70,22 +68,27 @@ $"""
     setContentView(R.layout.${activity.sName});
 """)
 
-//  onItemClickListener += onItemClick^doRefresh
-
   activity += addressLbl
   activity += listView
+  // add the listener implementation
+  val onItemClick = onItemClickListener.methods('onItemClick)
+  if (onItemClick.isDefined) {
+    onItemClick.get += 'Code -> doRefresh(getId())
+    onItemClick.get += 'Code -> doActivate(onItemClick.get.params(3))
+  }
   activity += onCreate
-  // dynamically create method implementation 
+  // create the method implementation 
   onCreate += 'Code ->
 $"""
     // dynamic content
     ${activity.propsInit}
 """
   onCreate += 'Code -> listView('setOnItemClickListener, onItemClickListener())
-  onCreate += 'Code -> doActivate(getId())
 
+  // add private methods
   activity += doActivate
   activity += getId
+  activity += doRefresh
 println(activity.holder)
 
 /*  def imports =
@@ -112,7 +115,8 @@ println(activity.holder)
 
     // dynamic content
 """) &&
-  onCreate.holder.contains("doActivate(getId());")
+  onCreate.holder.contains("doRefresh(getId());")
+  onCreate.holder.contains("doActivate(arg4);")
 
   //----- Import's operations -----
 
