@@ -23,10 +23,10 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 
   class contains imports list 	{imports}
   class apply its default constructor ${~Class('adal, 'Test)() === "new Test()"}
-  class contains methods list 	${methods}
+  class contains methods list 	$methodsCheck
 
   import's type defined         ${Import("com.foo.Bar")() === "Bar"}
-  import's uniqueness           ${importsUniqueness}
+  import's uniqueness           $importsUniqueness
   imports generate properly     onItemClick.imports === s""import android.widget.AdapterView;Code.CRLFimport android.view.View;Code.CRLF""
 
   property is a class field     $propertyIsField
@@ -44,8 +44,8 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
   val onItemClickListener = new AnonymousClass(AndroidWidgetAdapterViewOnItemClickListener)
 
   val doRefresh = Private::Method("doRefresh", 'id -> JavaLong, JavaVoid)(
-        code"""${addressLbl.name}.setText("Selected id: "+id);"""
-      )
+code"""${addressLbl.name}.setText("Selected id: "+id);"""
+  )
 
   val doActivate = Private::Method('doActivate, 'id -> JavaLong, 'R -> JavaVoid)(
 code"""
@@ -59,7 +59,7 @@ code"""
   )
 
   val getId = Private::Method('getId, JavaLong)(
-      code"""return getIntent().getLongExtra("ID", -1);"""
+code"""return getIntent().getLongExtra("ID", -1);"""
   )
 
   val onCreate = Public::Method('onCreate, 'savedInstanceState -> AndroidOsBundle, JavaVoid)(
@@ -91,7 +91,37 @@ $"""
   activity += doRefresh
 println(activity.holder)
 
-/*  def imports =
+  //----- Methods operations -----
+
+  def methodsCheck =
+    onCreate.holder.contains(
+"""public void onCreate(Bundle savedInstanceState) {
+  
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.MyActivity);
+
+    // dynamic content
+""") &&
+  onCreate.holder.contains("doRefresh(getId());")
+  onCreate.holder.contains("doActivate(arg4);")
+
+  def propertyContainsListeners =
+    avoidIdentation(~onItemClickListener) ===
+    avoidIdentation(
+"""
+new AdapterView.OnItemClickListener() {
+  
+public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
+  doRefresh(getId());doActivate(arg4);
+}
+
+
+}
+""")
+
+  //----- Imports operations -----
+
+/*  def importsCheck =
     activity.holder.contains("import android.app.Activity;") &&
     activity.holder.contains("import android.widget.TextView;") &&
     activity.holder.contains("import android.widget.ListView;") &&
@@ -106,25 +136,9 @@ println(activity.holder)
 //    activity.holder.contains("import java.util.Calendar;") &&
 //    activity.holder.contains("import android.app.DatePickerDialog;")
 */
-  def methods =
-    onCreate.holder.contains(
-"""public void onCreate(Bundle savedInstanceState) {
-  
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.MyActivity);
-
-    // dynamic content
-""") &&
-  onCreate.holder.contains("doRefresh(getId());")
-  onCreate.holder.contains("doActivate(arg4);")
-
-  //----- Import's operations -----
-
 
   def importsUniqueness = {
-    val code = new Code {
-      override def holder = ""
-    }
+    val code = code""
     val i1 = Import("com.foo.Bar")
     val i2 = Import("com.foo.Bar")
     code <~ i1
@@ -136,7 +150,7 @@ println(activity.holder)
     code.imports.contains("import com.foo.bar;")
   }
 
-  //----- Property's operations -----
+  //----- Properties operations -----
 
   def propertyIsField =
     activity.propsList.contains(listView) &&
@@ -144,19 +158,5 @@ println(activity.holder)
 
   def propertyCallsMethod =
     activity.holder.contains(listView.name + ".setOnItemClickListener(")
-
-  def propertyContainsListeners =
-    avoidIdentation(~onItemClickListener) ===
-      avoidIdentation(
-"""
-new AdapterView.OnItemClickListener() {
-  
-public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
-  doRefresh(getId());doActivate(arg4);
-}
-
-
-}
-""")
 
 }
