@@ -26,17 +26,10 @@ object Property {
 
 
 class Property(val sym: Symbol, override val typeOf: Type) extends Value {
-// FIXME
-//  this <~ Import(typeOf)
 
   def this(name: String, imp: Import) = this(Symbol(name), new Type(Symbol(imp.pkgName), Symbol(imp())))
 
   def name = sym.name
-
-//  def listenersList = typeOf.cleanMethodsList.filter(!_.params.isEmpty)
-
-// FIXME
-//  def listeners = listenersList.foldLeft("")((r, listener) => r+(listener())+";"+Code.CRLF)
 
   def fieldsList = typeOf.fieldsList
   def fields(name: Symbol) = typeOf.fields(name)

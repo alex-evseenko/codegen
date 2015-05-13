@@ -21,7 +21,7 @@ import org.specs2.runner.JUnitRunner
 class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
   Specification of code generation:
 
-  class contains imports list 	{imports}
+  class contains imports list 	$importsCheck
   class apply its default constructor ${~Class('adal, 'Test)() === "new Test()"}
   class contains methods list 	$methodsCheck
 
@@ -45,6 +45,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 
   val doRefresh = Private::Method("doRefresh", 'id -> JavaLong, JavaVoid)(
 code"""${addressLbl.name}.setText("Selected id: "+id);"""
+//      addressLbl.methods('setText)("Selected id: " + doRefresh.params(0))
   )
 
   val doActivate = Private::Method('doActivate, 'id -> JavaLong, 'R -> JavaVoid)(
@@ -54,9 +55,8 @@ code"""
     final Intent intent = new Intent(this, EditItemActivity.class);
     intent.putExtras(bundle);
     startActivity(intent);
-""" <~ Import(AndroidOsBundle)
-    <~ Import(AndroidContentIntent)
-  )
+"""
+  ) <~ Import(AndroidOsBundle) <~ Import(AndroidContentIntent)
 
   val getId = Private::Method('getId, JavaLong)(
 code"""return getIntent().getLongExtra("ID", -1);"""
@@ -121,21 +121,20 @@ public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
 
   //----- Imports operations -----
 
-/*  def importsCheck =
+  def importsCheck =
     activity.holder.contains("import android.app.Activity;") &&
     activity.holder.contains("import android.widget.TextView;") &&
     activity.holder.contains("import android.widget.ListView;") &&
     activity.holder.contains("import android.os.Bundle;") &&
-    activity.holder.contains("import android.widget.AdapterView;") //&&
-//    activity.holder.contains("import com.foo.Bar;") &&
-//    activity.holder.contains("import android.widget.AdapterView.OnItemClickListener;") &&
     activity.holder.contains("import android.content.Intent;") //&&
+//    activity.holder.contains("import android.widget.AdapterView;") //&&
+//    activity.holder.contains("import com.foo.Bar;") &&
 //    activity.holder.contains("import android.view.View;") &&
 //    activity.holder.contains("import android.widget.AdapterView;") &&
 //    activity.holder.contains("import android.app.Dialog;") &&
 //    activity.holder.contains("import java.util.Calendar;") &&
 //    activity.holder.contains("import android.app.DatePickerDialog;")
-*/
+
 
   def importsUniqueness = {
     val code = code""

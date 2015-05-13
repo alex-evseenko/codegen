@@ -63,7 +63,7 @@ ${methodsList.foldLeft("")((a, m) => a + m.holder + Code.CRLF)}
   def <~(m: Method) = {
     importsList ++= m.importsList
     methodsList += m
-    dependentMethodsList ++= m.dependentMethodsList
+//    dependentMethodsList ++= m.dependentMethodsList
     this
   }
 

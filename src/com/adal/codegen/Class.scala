@@ -41,9 +41,9 @@ object Class {
 class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   extends Type(pkg, name) with SectionedCode {
 
-//  this <~ Import(base)
+  this <~ Import(base)
 
-// FIXME it's semanticaly the same as 
+
   private val _props = collection.mutable.Set[Property]()
 
   def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
@@ -59,13 +59,14 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   def +=(p: Property) = {
     _props += p
-//    this <~ p.importsList.toList
+    this <~ Import(p.typeOf)
 
     this
   }
 
   override def +=(m: Callable) = {
     super.+=(m)
+    this <~ m.importsList
 
     this
   }

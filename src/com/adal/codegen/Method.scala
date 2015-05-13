@@ -27,7 +27,7 @@ class CleanMethod(override val name: Symbol, types: Type*) extends Callable {
   if (!checkUnitArg)
     throw new IllegalArgumentException(name+": wrong formal params list.")
   // add imports declarations for params
-  formals.filter(!_.typeOf.isPrimitive).map(p => this <~ Import(p.typeOf.qName))
+  types.filter(!_.typeOf.isPrimitive).map(t => this <~ Import(t.typeOf.qName))
 
   override val params = if (types.isEmpty) Seq(Parameter(JavaVoid)) else Parameter(types)
 
@@ -78,8 +78,15 @@ if (_params.size > 1)
     this
   }
 
-  def dependentMethodsList: List[Method] =
-    _dependentMethods.foldLeft(List[Method]())((a, m) => a:::List(m):::m.dependentMethodsList)
+  override def <~(i: Import) = {
+    super.<~(i)
+    this
+  }
+
+  override def <~(xs: List[Import]) = {
+    super.<~(xs)
+    this
+  }
 
   def decl: String =
     s"""$visibility ${typeOf.sName} ${sName}(${formals.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""

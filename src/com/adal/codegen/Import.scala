@@ -39,4 +39,6 @@ class Import(val imp: String) {
 
   override def toString = "import "+imp+";"
 
+  def unary_~ = toString
+
 }

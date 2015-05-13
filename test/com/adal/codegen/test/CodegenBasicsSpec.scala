@@ -252,6 +252,9 @@ new AdapterView.OnItemClickListener() {
 }
 )""")
   }
+  property contains import of itself type ${
+    ~Import(Property('activity, AndroidAppActivity).typeOf) === "import android.app.Activity;"
+  }
 
 Type has getters return:
   full quilified name         ${AndroidAppActivity.qName === "android.app.Activity"}
