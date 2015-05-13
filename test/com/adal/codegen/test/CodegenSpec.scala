@@ -25,7 +25,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
   class contains methods list 	$methodsCheck
 
   class contains imports list 	$importsCheck
-  import's type defined         ${Import("com.foo.Bar")() === "Bar"}
+  import's type defined         ${~Import("com.foo.Bar") === "import com.foo.Bar;"}
   import's uniqueness           $importsUniqueness
 
   property is a class field     $propertyIsField
