@@ -15,13 +15,13 @@ $"""
     setContentView(R.layout.${activity.sName});
 """)
     activity += onCreate
- ```
+```
  
  The `~` operator generates target code:
- ```
- ~activity ===
- s"""
- package adal.gui;
+```
+~activity ===
+s"""
+package adal.gui;
 
 import android.app.Activity;
 import android.os.Bundle;
