@@ -123,6 +123,7 @@ object AndroidWidgetListView extends AndroidWidget('ListView) {
   this += CleanMethod('setOnItemClickListener, AndroidWidgetAdapterViewOnItemClickListener, JavaVoid)
 }
 object AndroidWidgetTextView extends AndroidWidget('TextView)
+object AndroidWidgetButton extends AndroidWidget('Button)
 object AndroidWidgetAdapterView extends AndroidWidget('AdapterView)
 object AndroidViewView extends AndroidView('View)
 
