@@ -125,6 +125,7 @@ object AndroidWidgetListView extends AndroidWidget('ListView) {
 object AndroidWidgetTextView extends AndroidWidget('TextView)
 object AndroidWidgetEditText extends AndroidWidget('EditText)
 object AndroidWidgetButton extends AndroidWidget('Button)
+object AndroidWidgetCheckBox extends AndroidWidget('CheckBox)
 object AndroidWidgetAdapterView extends AndroidWidget('AdapterView)
 object AndroidViewView extends AndroidView('View)
 
