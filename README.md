@@ -4,6 +4,52 @@ Abstract Declarative Application Language -- Code Generation DSL
 Code Generation DSL (Codegen DSL or just Codegen) is a meta-programming framework that allows generating of Java-classes based on dynamic composition of fragments of code into methods and classes.
 Codegen DSL consists of Scala classes described below.
 
+Codegen allows to declare classes, methods, properties, etc. for instance an Android activity could be defined like this:
+```
+    import com.adal.codegen._
+
+    val activity = Class("adal.gui", 'MyActivity, AndroidAppActivity)
+    val onCreate = Public::Method('onCreate, 'savedInstanceState -> AndroidOsBundle, JavaVoid)(
+$"""
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.${activity.sName});
+""")
+    activity += onCreate
+ ```
+ 
+ The `~` operator generates target code:
+ ```
+ ~activity ===
+ s"""
+ package adal.gui;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class MyActivity extends Activity {
+  
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.MyActivity);
+  }
+}
+ """
+```
+
+And then it's possible to add some specific code into the onCreate method dynamically:
+```
+activity('onCreate).get += 'Code -> $code"""// some fragment of code"""
+```
+
+after that ~activity returns onCreate implementation with the fragment added:
+```
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.MyActivity);
+    // some fragment of code
+  }
+```
+
 Code
 ----
 
