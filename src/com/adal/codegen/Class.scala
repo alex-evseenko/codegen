@@ -36,6 +36,8 @@ s"""
 object Class {
   def apply(pkg: Symbol, name: Symbol) = new Class(Some(pkg), name, JavaLangObject)
   def apply(pkg: Symbol, name: Symbol, base: Type) = new Class(Some(pkg), name, base)
+  def apply(pkg: String, name: Symbol) = new Class(pkg, name, JavaLangObject)
+  def apply(pkg: String, name: Symbol, base: Type) = new Class(pkg, name, base)
 }
 
 class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
@@ -49,6 +51,10 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
 
   def this(pkg: Symbol, name: Symbol) = this(Some(pkg), name, JavaLangObject)
+
+  def this(pkg: String, name: Symbol, base: Type) = this(Some(Symbol(pkg)), name, base)
+
+  def this(pkg: String, name: Symbol) = this(pkg, name, JavaLangObject)
 
 
   def propsList = _props.toList
