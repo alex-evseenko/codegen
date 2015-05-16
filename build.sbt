@@ -16,7 +16,7 @@ version := "1.0"
 
 scalaVersion := "2.11.2"
 
-javaHome := Some(file("C:/Java/jdk1.7.0_45"))
+javaHome := Some(file(System.getenv("JAVA_HOME")))
 
 fork := true
 
