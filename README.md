@@ -9,7 +9,7 @@ Codegen allows to declare classes, methods, properties, etc. for instance an And
     import com.adal.codegen._
 
     val activity = Class("adal.gui", 'MyActivity, AndroidAppActivity)
-    val onCreate = Public::Method('onCreate, 'savedInstanceState -> AndroidOsBundle, JavaVoid)(
+    val onCreate = Public::Method('onCreate, 'savedInstanceState->AndroidOsBundle, JavaVoid)(
 $"""
     super.onCreate(savedInstanceState);
     setContentView(R.layout.${activity.sName});
@@ -33,7 +33,7 @@ public class MyActivity extends Activity {
     setContentView(R.layout.MyActivity);
   }
 }
- """
+"""
 ```
 
 And then it's possible to add some specific code into the onCreate method dynamically:
