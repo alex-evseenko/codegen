@@ -6,18 +6,18 @@ Codegen DSL consists of Scala classes described below.
 
 Codegen allows to declare classes, methods, properties, etc. for instance an Android activity could be defined like this:
 ```
-    import com.adal.codegen._
+import com.adal.codegen._
 
-    val activity = Class("adal.gui", 'MyActivity, AndroidAppActivity)
-    val onCreate = Public::Method('onCreate, 'savedInstanceState->AndroidOsBundle, JavaVoid)(
-$"""
+val activity = Class("adal.gui", 'MyActivity, AndroidAppActivity)
+val onCreate = Public::Method('onCreate, 'savedInstanceState->AndroidOsBundle, JavaVoid)(
+  $"""
     super.onCreate(savedInstanceState);
     setContentView(R.layout.${activity.sName});
-""")
-    activity += onCreate
+  """)
+activity += onCreate
 ```
  
- The `~` operator generates target code:
+The `~` operator generates target code:
 ```
 ~activity ===
 s"""
@@ -38,7 +38,7 @@ public class MyActivity extends Activity {
 
 And then it's possible to add some specific code into the onCreate method dynamically:
 ```
-activity('onCreate).get += 'Code -> $code"""// some fragment of code"""
+activity('onCreate).get += 'Code -> $"""// some fragment of code"""
 ```
 
 after that ~activity returns onCreate implementation with the fragment added:
