@@ -287,9 +287,6 @@ trait SectionedCode extends Code {
 
   def sections = _sections.toList
 
-  private def toCode(llc: List[LCode]) =
-    llc.foldLeft(code"")((c, lc) => c ++ lc())
-
   def code =
     _sections.values.foldLeft("")((a, llc) => a + ~toCode(llc))
 
@@ -298,6 +295,9 @@ trait SectionedCode extends Code {
       Some(toCode(_sections(secName)))
     else
       None
+
+  private def toCode(llc: List[LCode]) =
+    llc.foldLeft(code"")((c, lc) => c ++ lc())
 
   def +=(secName: Symbol) = {
     if (this(secName).isEmpty) {

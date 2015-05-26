@@ -44,6 +44,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   extends Type(pkg, name) with SectionedCode {
 
   this <~ Import(base)
+  this += 'PropsDecl -> $"""$propsDecl"""
 
 
   private val _props = collection.mutable.Set[Property]()
@@ -87,7 +88,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 $imports
 
 public class $sName${if (base.name != 'Object) " extends "+base.sName} {
-  $propsDecl
+  ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
 """
