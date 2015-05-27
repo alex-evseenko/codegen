@@ -119,7 +119,7 @@ case class AndroidView(typ: Symbol) extends Type(Symbol("android.view"), typ)
 object AndroidAppActivity extends AndroidApp('Activity)
 object AndroidOsBundle extends AndroidOs('Bundle)
 object AndroidContentIntent extends AndroidContent('Intent)
-object AndroidContentProvider extends AndroidContent('Provider)
+object AndroidContentProvider extends AndroidContent('ContentProvider)
 object AndroidWidgetListView extends AndroidWidget('ListView) {
   this += CleanMethod('setOnItemClickListener, AndroidWidgetAdapterViewOnItemClickListener, JavaVoid)
 }
