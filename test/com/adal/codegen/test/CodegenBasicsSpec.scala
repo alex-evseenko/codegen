@@ -269,7 +269,25 @@ Type has getters return:
   locate a field and apply    ${~Coordinate('address)('length) === "address.length()"}
   true if the type is primitive ${JavaVoid.isPrimitive}
   import statement if non primitive ${AndroidAppActivity.importDecl.get === "import android.app.Activity;"}
+
+Class can contain modifiers:
+  default ${ ~Class('DefaultModifier) === 
 """
+class DefaultModifier {
+
+}
+"""
+  }
+  chain of modifiers ${ ~(_public::_final::_static::Class('DefaultModifier)) === 
+"""
+class DefaultModifier {
+
+}
+"""
+  }
+
+
+""" // End of the spec
 
   object Coordinate extends Type('Coordinate) {
     this += 'address -> JavaLangString

@@ -63,7 +63,7 @@ class Type(val pkg: Option[Symbol], val name: Symbol) {
 
   def pkgName = if (!isPrimitive) pkg.get.name else ""
   def qName = if (!isPrimitive) pkgName +'.' + sName else sName
-  def isPrimitive = pkg.isEmpty
+  def isPrimitive = pkg.isEmpty || pkg == Symbol("java.lang")
   def importDecl: Option[String] = if (isPrimitive) None else Some(s"import $qName;")
 
   def canEqual(other: Any) = {

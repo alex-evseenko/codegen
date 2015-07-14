@@ -38,7 +38,7 @@ class CleanMethod(override val name: Symbol, types: Type*) extends Callable {
 }
 
 
-abstract class Visibility(val value: String) {
+case class Visibility(val value: String) {
   override def toString = value
 }
 
