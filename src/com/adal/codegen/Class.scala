@@ -20,14 +20,9 @@ import com.adal.codegen.Code._
 
 case class ClassModifier(val value: Symbol) { self =>
 
-  private val modifiers = collection.mutable.ListBuffer[ClassModifier]()
-
   def ::(modifier: ClassModifier) = {
-    modifiers += modifier
     this
   }
-
-  def unary_~ = modifiers.map(_.value.name).mkString(" ") + " " + toString
 
   override def toString = value.name
 }
@@ -75,7 +70,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   this += 'PropsDecl -> $"""$propsDecl"""
 
 
-  private var modifiersChain: ClassModifier = _default
+  private val modifiersChain = collection.mutable.ListBuffer[ClassModifier]()
   private val _props = collection.mutable.Set[Property]()
 
   def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
@@ -96,9 +91,11 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   def propsInit = _props.foldLeft("")((a, p) => a+p.init+Code.CRLF)
 
   def ::(modifier: ClassModifier) = {
-    modifiersChain = modifier
+    modifiersChain += modifier
     this
   }
+
+  private def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
 
   def +=(p: Property) = {
     _props += p
@@ -123,7 +120,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
 $imports
 
-${~modifiersChain} class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
+${qualifiers} class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
   ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }

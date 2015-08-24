@@ -278,12 +278,13 @@ class DefaultModifier {
 }
 """)
   }
-  chain of modifiers ${ ~(_public::_final::_static::Class('DefaultModifier)) === 
+  chain of modifiers ${ avoidIdentation(~(_public::_final::_static::Class('DefaultModifier))) === 
+avoidIdentation(
 """
-class DefaultModifier {
+public final static class DefaultModifier {
 
 }
-"""
+""")
   }
 
 
