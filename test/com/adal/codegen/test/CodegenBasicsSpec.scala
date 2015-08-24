@@ -271,12 +271,12 @@ Type has getters return:
   import statement if non primitive ${AndroidAppActivity.importDecl.get === "import android.app.Activity;"}
 
 Class can contain modifiers:
-  default ${ ~Class('DefaultModifier) === 
+  default ${ avoidIdentation(~Class('DefaultModifier)) === 
+ avoidIdentation(
 """
 class DefaultModifier {
-
 }
-"""
+""")
   }
   chain of modifiers ${ ~(_public::_final::_static::Class('DefaultModifier)) === 
 """

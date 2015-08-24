@@ -123,7 +123,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
 $imports
 
-${~modifiersChain} class $sName${if (base.name != 'Object) " extends "+base.sName} {
+${~modifiersChain} class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
   ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
