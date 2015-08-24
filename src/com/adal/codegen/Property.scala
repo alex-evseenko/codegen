@@ -41,9 +41,8 @@ object Property {
 }
 
 
-class Property(val sym: Symbol, override val typeOf: Type) extends Value { self =>
+class Property(val sym: Symbol, override val typeOf: Type) extends Value {
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
-  $private::self
 
   def this(name: String, imp: Import) = this(Symbol(name), new Type(Symbol(imp.pkgName), Symbol(imp())))
 
