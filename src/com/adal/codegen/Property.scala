@@ -9,6 +9,22 @@ package com.adal.codegen
 import scala.collection.mutable.ArrayBuffer
 import com.adal.codegen.Code._
 
+case class Modifier(val value: Symbol) {
+
+  def ::(modifier: ClassModifier) = {
+    this
+  }
+
+  override def toString = value.name
+}
+
+object $public extends Modifier('public)
+object $protected extends Modifier('protected)
+object $default extends Modifier(Symbol(""))
+object $private extends Modifier('private)
+object $static extends Modifier('static)
+object $final extends Modifier('final)
+
 /**
  * Single property of type imp()
  * 
@@ -25,9 +41,18 @@ object Property {
 }
 
 
-class Property(val sym: Symbol, override val typeOf: Type) extends Value {
+class Property(val sym: Symbol, override val typeOf: Type) extends Value { self =>
+  private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
+  $private::self
 
   def this(name: String, imp: Import) = this(Symbol(name), new Type(Symbol(imp.pkgName), Symbol(imp())))
+
+  private def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
+
+  def ::(modifier: Modifier) = {
+    modifiersChain += modifier
+    this
+  }
 
   def name = sym.name
 
@@ -39,7 +64,7 @@ class Property(val sym: Symbol, override val typeOf: Type) extends Value {
   /**
    * Property declaration as a class field.
    */
-  def decl = s"""private ${typeOf.sName} $name;"""
+  def decl = s"""$qualifiers ${typeOf.sName} $name;"""
 
 // FIXME exclude it as Android-specific
   def init = s"""$name = (${typeOf.sName}) findViewById(R.id.$name);"""

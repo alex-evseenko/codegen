@@ -18,7 +18,7 @@ import com.adal.codegen.Code._
  *
  */
 
-case class ClassModifier(val value: Symbol) { self =>
+case class ClassModifier(val value: Symbol) {
 
   def ::(modifier: ClassModifier) = {
     this
@@ -120,7 +120,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
 $imports
 
-${qualifiers} class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
+$qualifiers class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
   ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
