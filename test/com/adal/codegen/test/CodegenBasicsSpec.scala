@@ -255,6 +255,17 @@ new AdapterView.OnItemClickListener() {
   property contains import of itself type ${
     ~Import(Property('activity, AndroidAppActivity).typeOf) === "import android.app.Activity;"
   }
+  property is a const ${(Private::Const('GREETING, JavaLangString, "Hola!")).decl === """private final static String GREETING = "Hola!";"""}
+  property is a const (inference) ${(Private::Const('GREETING, "Hola!")).decl === """private final static String GREETING = "Hola!";"""}
+  const has compliance type ${
+    try {
+      Private::Const('GREETING, JavaLangString, 3.14159)
+      false
+    } catch {
+      case e: IllegalArgumentException => true
+      case _: Throwable => false
+    }
+  }
 
 Type has getters return:
   full quilified name         ${AndroidAppActivity.qName === "android.app.Activity"}

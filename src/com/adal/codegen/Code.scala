@@ -155,6 +155,8 @@ object Code {
 
   implicit def exprFloatWrapper(expr: Float) = new EFloat(expr)
 
+  implicit def exprDoubleWrapper(expr: Double) = new EDouble(expr)
+
   implicit def exprStringWrapper(expr: String) = new EStr(expr)
 
   implicit def typeToParam(typ: Type) = new Parameter(typ)
@@ -472,6 +474,10 @@ case class ELong(override val expr: Long) extends ValueExpr(expr) {
 
 case class EFloat(override val expr: Float) extends ValueExpr(expr) {
   override def typeOf = JavaFloat
+}
+
+case class EDouble(override val expr: Double) extends ValueExpr(expr) {
+  override def typeOf = JavaDouble
 }
 
 case class EStr(override val expr: String) extends ValueExpr(expr) {

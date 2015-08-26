@@ -22,15 +22,20 @@ object Property {
   def apply(name: String, imp: String) = new Property(name, Import(imp))
 
   def apply(name: Symbol, typ: Type) = new Property(name, typ)
+
+  def apply(name: Symbol, typ: Type, initVal : Value) = new Property(name, typ, Some(initVal))
 }
 
 
-class Property(val sym: Symbol, override val typeOf: Type) extends Value {
+class Property(val sym: Symbol, override val typeOf: Type, val initVal: Option[Value] = None) extends Value {
+  if (initVal.isDefined && initVal.get.typeOf != typeOf) {
+    throw new IllegalArgumentException(s"Property $name initialized by different type.")
+  }
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
 
   def this(name: String, imp: Import) = this(Symbol(name), new Type(Symbol(imp.pkgName), Symbol(imp())))
 
-  private def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
+  protected def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
 
   def ::(modifier: Modifier) = {
     modifiersChain += modifier
@@ -47,7 +52,7 @@ class Property(val sym: Symbol, override val typeOf: Type) extends Value {
   /**
    * Property declaration as a class field.
    */
-  def decl = s"""$qualifiers ${typeOf.sName} $name;"""
+  def decl = s"""$qualifiers ${typeOf.sName} $name${if (initVal.isDefined) " = "+ ~initVal.get else ""};"""
 
 // FIXME exclude it as Android-specific
   def init = s"""$name = (${typeOf.sName}) findViewById(R.id.$name);"""
@@ -55,4 +60,19 @@ class Property(val sym: Symbol, override val typeOf: Type) extends Value {
   override def code = code"""$name"""
 
   override def toString = name
+}
+
+
+object Const {
+  def apply(name: Symbol, typ: Type, initVal : Value) = new Const(name, typ, initVal)
+
+  def apply(name: Symbol, initVal : Value) = new Const(name, initVal)
+}
+
+class Const(sym: Symbol, typeOf: Type, value: Value) extends Property(sym, typeOf, Some(value)) {
+  Final::Static::this
+
+  def this(name: Symbol, initVal : Value) = this(name, initVal.typeOf, initVal)
+
+  override def init = throw new IllegalStateException("Constant cannot be re-assigned. ")
 }

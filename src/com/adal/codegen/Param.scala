@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
  */
 @Deprecated
 object Param {
-  def apply(name: String, value: String) = new Const(name, value)
+  def apply(name: String, value: String) = new Const2(name, value)
 
   def apply(name: String, method: Method) = new Expr(name, method)
 
@@ -36,7 +36,7 @@ abstract class Param(val name: String) {
   override def toString = value
 }
 
-case class Const(override val name: String, val const: String) extends Param(name) {
+case class Const2(override val name: String, val const: String) extends Param(name) {
   override def value = const
 }
 
