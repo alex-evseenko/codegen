@@ -137,7 +137,7 @@ object AndroidWidgetAdapterViewOnItemClickListener extends AndroidWidgetAdapterV
 }
 
 object AndroidDatabaseSqliteSQLiteClosable extends AndroidDatabaseSqlite('SQLiteClosable)
-object AndroidDatabaseSqliteSQLiteOpenHelper extends AndroidDatabaseSqlite('SQLiteOpenHelper)
+object SQLiteOpenHelper extends AndroidDatabaseSqlite('SQLiteOpenHelper)
 object SQLiteDatabase extends AndroidDatabaseSqlite(Symbol("SQLiteClosable.SQLiteDatabase"))
 
 /**
