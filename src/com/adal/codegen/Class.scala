@@ -49,6 +49,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   if (!base.isPrimitive) {
     this <~ Import(base)
   }
+
   this += 'PropsDecl -> $"""$propsDecl"""
 
 
@@ -81,8 +82,9 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   def +=(p: Property) = {
     _props += p
-    this <~ Import(p.typeOf)
-
+    if (!p.typeOf.isPrimitive) {
+      this <~ Import(p.typeOf)
+    }
     this
   }
 
