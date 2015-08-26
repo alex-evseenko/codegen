@@ -115,6 +115,8 @@ case class AndroidOs(typ: Symbol) extends Type(Symbol("android.os"), typ)
 case class AndroidContent(typ: Symbol) extends Type(Symbol("android.content"), typ)
 case class AndroidWidget(typ: Symbol) extends Type(Symbol("android.widget"), typ)
 case class AndroidView(typ: Symbol) extends Type(Symbol("android.view"), typ)
+case class AndroidDatabaseSqliteSQLiteClosable(typ: Symbol) extends Type(Symbol("android.database.sqlite.SQLiteClosable"), typ)
+object AndroidDatabaseSqliteSQLiteOpenHelper extends Type(Symbol("android.database.sqlite"), 'SQLiteOpenHelper)
 
 object AndroidAppActivity extends AndroidApp('Activity)
 object AndroidOsBundle extends AndroidOs('Bundle)
@@ -135,6 +137,7 @@ object AndroidWidgetAdapterViewOnItemClickListener extends AndroidWidgetAdapterV
   this += CleanMethod('onItemClick, AndroidWidgetAdapterView, AndroidViewView, JavaInt, JavaLong, JavaVoid)
 }
 
+object SQLiteDatabase extends AndroidDatabaseSqliteSQLiteClosable('SQLiteDatabase)
 
 /**
  * Any fragment of code with associated list of imports.
