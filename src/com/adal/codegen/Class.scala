@@ -18,24 +18,6 @@ import com.adal.codegen.Code._
  *
  */
 
-case class ClassModifier(val value: Symbol) {
-
-  def ::(modifier: ClassModifier) = {
-    this
-  }
-
-  override def toString = value.name
-}
-
-object _public extends ClassModifier('public)
-object _protected extends ClassModifier('protected)
-object _default extends ClassModifier(Symbol(""))
-object _private extends ClassModifier('private)
-object _abstract extends ClassModifier('abstract)
-object _static extends ClassModifier('static)
-object _final extends ClassModifier('final)
-object _strictfp extends ClassModifier('strictfp)
-
 
 class Interface(override val pkg: Option[Symbol], override val name: Symbol)
   extends Type(pkg, name) with Code {
@@ -70,7 +52,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
   this += 'PropsDecl -> $"""$propsDecl"""
 
 
-  private val modifiersChain = collection.mutable.ListBuffer[ClassModifier]()
+  private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
   private val _props = collection.mutable.Set[Property]()
 
   def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
@@ -90,7 +72,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   def propsInit = _props.foldLeft("")((a, p) => a+p.init+Code.CRLF)
 
-  def ::(modifier: ClassModifier) = {
+  def ::(modifier: Modifier) = {
     modifiersChain += modifier
     this
   }

@@ -9,22 +9,6 @@ package com.adal.codegen
 import scala.collection.mutable.ArrayBuffer
 import com.adal.codegen.Code._
 
-case class Modifier(val value: Symbol) {
-
-  def ::(modifier: ClassModifier) = {
-    this
-  }
-
-  override def toString = value.name
-}
-
-object $public extends Modifier('public)
-object $protected extends Modifier('protected)
-object $default extends Modifier(Symbol(""))
-object $private extends Modifier('private)
-object $static extends Modifier('static)
-object $final extends Modifier('final)
-
 /**
  * Single property of type imp()
  * 

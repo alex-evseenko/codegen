@@ -36,7 +36,7 @@ class CodegenSpec extends SpecificationWithJUnit { def is = s2"""
 
   val activity = Class('adal, 'MyActivity, AndroidAppActivity)
 
-  val listView = $private::Property('listView, AndroidWidgetListView)
+  val listView = Private::Property('listView, AndroidWidgetListView)
 
   val addressLbl = Property('addressLbl, AndroidWidgetTextView)
 

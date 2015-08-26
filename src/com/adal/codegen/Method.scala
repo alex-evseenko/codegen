@@ -38,16 +38,6 @@ class CleanMethod(override val name: Symbol, types: Type*) extends Callable {
 }
 
 
-case class Visibility(val value: String) {
-  override def toString = value
-}
-
-object Public extends Visibility("public")
-object Protected extends Visibility("protected")
-object Default extends Visibility("")
-object Private extends Visibility("private")
-
-
 object Method {
   def apply(name: Symbol, params: Parameter*) = new Method(name, params: _*)
   def apply(name: String, params: Parameter*) = new Method(name, params: _*)
@@ -66,7 +56,7 @@ if (_params.size > 1)
 
   override val params = if (_params.isEmpty) Seq(Parameter(JavaVoid)) else _params
 
-  private var visibility: Visibility = Default
+  private var visibility: Modifier = Default
   private val _dependentMethods = ArrayBuffer[Method]()
 
   def this(name: String, args: Parameter*) = this(Symbol(name), args: _*)
@@ -98,7 +88,7 @@ $decl {
 }
 """
 
-  def ::(v: Visibility) = {
+  def ::(v: Modifier) = {
     visibility = v
     this
   }

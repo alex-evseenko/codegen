@@ -478,3 +478,22 @@ case class EStr(override val expr: String) extends ValueExpr(expr) {
   override def code = code""""${expr.toString}""""
   override def typeOf = JavaLangString
 }
+
+
+case class Modifier(val value: Symbol) {
+
+  def ::(modifier: Modifier) = {
+    this
+  }
+
+  override def toString = value.name
+}
+
+object Public extends Modifier('public)
+object Protected extends Modifier('protected)
+object Default extends Modifier(Symbol(""))
+object Private extends Modifier('private)
+object Static extends Modifier('static)
+object Final extends Modifier('final)
+object Strictfp extends Modifier('strictfp)
+object Override extends Modifier(Symbol("@Override"))
