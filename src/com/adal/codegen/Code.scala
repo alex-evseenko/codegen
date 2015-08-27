@@ -136,9 +136,8 @@ object AndroidWidgetAdapterViewOnItemClickListener extends AndroidWidgetAdapterV
   this += CleanMethod('onItemClick, AndroidWidgetAdapterView, AndroidViewView, JavaInt, JavaLong, JavaVoid)
 }
 
-object AndroidDatabaseSqliteSQLiteClosable extends AndroidDatabaseSqlite('SQLiteClosable)
 object SQLiteOpenHelper extends AndroidDatabaseSqlite('SQLiteOpenHelper)
-object SQLiteDatabase extends AndroidDatabaseSqlite(Symbol("SQLiteClosable.SQLiteDatabase"))
+object SQLiteDatabase extends AndroidDatabaseSqlite('SQLiteDatabase)
 
 /**
  * Any fragment of code with associated list of imports.
