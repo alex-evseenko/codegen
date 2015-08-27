@@ -99,7 +99,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 $imports
 
 $qualifiers class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
-  ${_nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
+  ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
   ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }

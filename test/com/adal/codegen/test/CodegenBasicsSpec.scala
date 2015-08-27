@@ -301,8 +301,8 @@ public final static class DefaultModifier {
 Inner class:
   has outer class ${
     val outer = Class('OuterClass)
-    val inner = InnerClass(outer, 'InnerClass)
-    outer.nestedClasses(0) == inner
+    val inner = Protected::Final::InnerClass(outer, 'InnerClass)
+    outer.nestedClasses(0) == inner &&
     (~outer).contains("class InnerClass {")
   }
 
