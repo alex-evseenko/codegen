@@ -52,6 +52,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
 
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
+  private val _nestedClasses = collection.mutable.Set[InnerClass]()
   private val _props = collection.mutable.Set[Property]()
 
   def propsList = _props.toList
@@ -75,6 +76,12 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
     this
   }
 
+  def +=(inner: InnerClass) {
+    _nestedClasses += inner
+  }
+
+  def nestedClasses = _nestedClasses.toList
+
   override def +=(m: Callable) = {
     super.+=(m)
     this <~ m.importsList
@@ -92,6 +99,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 $imports
 
 $qualifiers class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
+  ${_nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
   ${~this('PropsDecl).get}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
@@ -113,4 +121,27 @@ new $sName() {
 }
 """
   
+}
+
+
+object InnerClass {
+  def apply(outerClass: Class, name: Symbol, base: Type = JavaLangObject) = new InnerClass(outerClass, name, base)
+}
+
+class InnerClass(val outerClass: Class, name: Symbol, base: Type = JavaLangObject) extends
+  Class(None, name, base) {
+
+  outerClass += this
+
+  override def imports = ""
+}
+
+object NestedClass {
+  def apply(outerClass: Class, name: Symbol, base: Type = JavaLangObject) = new NestedClass(outerClass, name, base)
+}
+
+class NestedClass(outerClass: Class, name: Symbol, base: Type = JavaLangObject) extends
+  InnerClass(outerClass, name, base) {
+
+  Static::this
 }
