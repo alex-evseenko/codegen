@@ -36,9 +36,9 @@ s"""
 object Class {
   def apply(pkg: Symbol, name: Symbol) = new Class(Some(pkg), name)
   def apply(pkg: Symbol, name: Symbol, base: Type) = new Class(Some(pkg), name, base)
-  def apply(name: Symbol) = new Class(name)
-  def apply(pkg: String, name: Symbol) = new Class(pkg, name)
-  def apply(pkg: String, name: Symbol, base: Type) = new Class(pkg, name, base)
+  def apply(name: Symbol) = new Class(None, name)
+  def apply(pkg: String, name: Symbol) = new Class(Some(Symbol(pkg)), name)
+  def apply(pkg: String, name: Symbol, base: Type) = new Class(Some(Symbol(pkg)), name, base)
 }
 
 class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
@@ -53,17 +53,6 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
   private val _props = collection.mutable.Set[Property]()
-
-  def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
-
-  def this(pkg: Symbol, name: Symbol) = this(Some(pkg), name)
-
-  def this(name: Symbol) = this(None, name)
-
-  def this(pkg: String, name: Symbol, base: Type) = this(Some(Symbol(pkg)), name, base)
-
-  def this(pkg: String, name: Symbol) = this(pkg, name, JavaLangObject)
-
 
   def propsList = _props.toList
 
@@ -125,7 +114,3 @@ new $sName() {
 """
   
 }
-
-
-
-
