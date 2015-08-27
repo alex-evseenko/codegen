@@ -17,8 +17,6 @@ import com.adal.codegen.Code._
  * @author Alex Evseenko
  *
  */
-
-
 class Interface(override val pkg: Option[Symbol], override val name: Symbol)
   extends Type(pkg, name) with Code {
 
@@ -36,14 +34,14 @@ s"""
 }
 
 object Class {
-  def apply(pkg: Symbol, name: Symbol) = new Class(Some(pkg), name, JavaLangObject)
+  def apply(pkg: Symbol, name: Symbol) = new Class(Some(pkg), name)
   def apply(pkg: Symbol, name: Symbol, base: Type) = new Class(Some(pkg), name, base)
   def apply(name: Symbol) = new Class(name)
-  def apply(pkg: String, name: Symbol) = new Class(pkg, name, JavaLangObject)
+  def apply(pkg: String, name: Symbol) = new Class(pkg, name)
   def apply(pkg: String, name: Symbol, base: Type) = new Class(pkg, name, base)
 }
 
-class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
+class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
   extends Type(pkg, name) with SectionedCode {
 
   if (!base.isPrimitive) {
@@ -58,9 +56,9 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type)
 
   def this(pkg: Symbol, name: Symbol, base: Type) = this(Some(pkg), name, base)
 
-  def this(pkg: Symbol, name: Symbol) = this(Some(pkg), name, JavaLangObject)
+  def this(pkg: Symbol, name: Symbol) = this(Some(pkg), name)
 
-  def this(name: Symbol) = this(None, name, JavaLangObject)
+  def this(name: Symbol) = this(None, name)
 
   def this(pkg: String, name: Symbol, base: Type) = this(Some(Symbol(pkg)), name, base)
 
@@ -127,4 +125,7 @@ new $sName() {
 """
   
 }
+
+
+
 
