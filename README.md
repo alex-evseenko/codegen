@@ -130,7 +130,7 @@ InnerClass, NestedClass
 
 Nested classes could be created using InnerClass for non-static and NestedClass for static nested Java classes respectively.
 
-The fragment below generate InnerClass into OuterClass in moment of creation:
+Fragment below generates InnerClass within OuterClass in moment of creation:
 
 ```
 val outer = Class('OuterClass)
@@ -147,7 +147,3 @@ outer += Protected::Final::InnerClass(outer, 'InnerClass)
 
 outer.nestedClasses.isEmpty
 ```
-
-
-
-These traits/classes interact to each other and allow to generate target code.
