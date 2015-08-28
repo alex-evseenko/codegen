@@ -303,7 +303,12 @@ Inner class:
     val outer = Class('OuterClass)
     val inner = Protected::Final::InnerClass(outer, 'InnerClass)
     outer.nestedClasses(0) == inner &&
-    (~outer).contains("class InnerClass {")
+    (~outer).contains("protected final class InnerClass {")
+  }
+  postpone generation until outer class generates ${
+    val outer = Class('OuterClass)
+    outer += Protected::Final::InnerClass(outer, 'InnerClass)
+    outer.nestedClasses.isEmpty
   }
 
 """ // End of the spec
