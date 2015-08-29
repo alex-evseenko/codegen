@@ -37,7 +37,7 @@ Code operations:
     val code = new Code { override def holder = s"code$otherCalc" }
     otherCalc = 77
 
-    ~code === "code77"
+    ~code() === "code77"
   }
   or use lambda () => Code ${
     var otherCalc = -1
@@ -313,7 +313,13 @@ Inner class:
     outer.nestedClasses.isEmpty
   }
 
+Template generation syntax sugar supports:
+  parenthesis to method call and ~> operator to lookup object members ${
+    val s = JavaLangString
+~code"""${ ~s.methods('substring).get(1) };""" === "substring(1);"
+  }
 """ // End of the spec
+
 
   object Coordinate extends Type('Coordinate) {
     this += 'address -> JavaLangString

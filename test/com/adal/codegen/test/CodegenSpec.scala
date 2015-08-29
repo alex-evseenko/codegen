@@ -75,7 +75,9 @@ $"""
   val onItemClick = onItemClickListener.methods('onItemClick)
   if (onItemClick.isDefined) {
     onItemClick.get += 'Code -> doRefresh(getId())
+    onItemClick.get += 'Code -> $";"
     onItemClick.get += 'Code -> doActivate(onItemClick.get.params(3))
+    onItemClick.get += 'Code -> $";"
   }
   // add imports list from anonymous class
   activity <~ onItemClickListener.importsList
@@ -106,8 +108,8 @@ println(activity.holder)
 
     // dynamic content
 """) &&
-  onCreate.holder.contains("doRefresh(getId());")
-  onCreate.holder.contains("doActivate(arg4);")
+  onCreate.holder.contains("doRefresh(getId())")
+  onCreate.holder.contains("doActivate(arg4)")
 
   def propertyContainsListeners =
     avoidIdentation(~onItemClickListener) ===

@@ -36,6 +36,8 @@ package java {
   object JavaLangDouble extends JavaLang('Double)
   object JavaLangString extends JavaLang('String) {
     this += CleanMethod('length, JavaInt)
+    this += CleanMethod('substring, JavaInt, JavaLangString)
+    this += CleanMethod('substring, JavaInt, JavaInt, JavaLangString)
   }
 }
 

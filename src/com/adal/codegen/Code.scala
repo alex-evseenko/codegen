@@ -87,7 +87,7 @@ class Type(val pkg: Option[Symbol], val name: Symbol) {
     prime * (prime + pkg.hashCode) + name.hashCode
   }
 
-  override def toString = if (isPrimitive) name.toString else qName
+  override def toString = if (isPrimitive) name.name else qName
 }
 
 
@@ -138,9 +138,9 @@ object Code {
 
   type LCode = () => Code
 
-  implicit def value_to_lcode(v: Value) = () => v.code ++ code";"
+  implicit def value_to_lcode(v: Value) = () => v.code
 
-  implicit def entry_to_lcode(entry: (Symbol, Value)) = entry._1 -> {() => entry._2.code ++ code";"}
+  implicit def entry_to_lcode(entry: (Symbol, Value)) = entry._1 -> {() => entry._2.code}
 
   implicit def byname_to_noarg[a](a: => a) = () => a
 
@@ -298,7 +298,7 @@ trait Value {
       }
     }
 
-  override def toString = typeOf +" {"+ ~code +"}"
+  override def toString = ~code +": "+ typeOf
 }
 
 /**
