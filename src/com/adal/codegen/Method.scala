@@ -12,6 +12,7 @@ package com.adal.codegen
 
 import scala.collection.mutable.ArrayBuffer
 import com.adal.codegen.Code._
+import com.adal.codegen.types.java._
 
 
 /**

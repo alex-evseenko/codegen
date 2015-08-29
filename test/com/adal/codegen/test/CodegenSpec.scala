@@ -10,6 +10,8 @@ import Util.avoidIdentation
 import org.specs2.SpecificationWithJUnit
 import com.adal.codegen._
 import com.adal.codegen.Code._
+import com.adal.codegen.types.java._
+import com.adal.codegen.types.android._
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 

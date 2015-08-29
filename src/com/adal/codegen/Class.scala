@@ -12,6 +12,7 @@ package com.adal.codegen
 
 import scala.collection.mutable.ArrayBuffer
 import com.adal.codegen.Code._
+import com.adal.codegen.types.java._
 
 /**
  * @author Alex Evseenko
@@ -53,6 +54,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
   private val _nestedClasses = collection.mutable.Set[InnerClass]()
+// FIXMY use instead Type#fieldsList
   private val _props = collection.mutable.Set[Property]()
 
   def propsList = _props.toList
