@@ -44,9 +44,9 @@ class Property(val sym: Symbol, override val typeOf: Type, val initVal: Option[V
 
   def name = sym.name
 
-  def fieldsList = typeOf.fieldsList
+  def fieldsList = typeOf.fields
   def fields(name: Symbol) = typeOf.fields(name)
-  def methodsList = typeOf.methodsList
+  def methodsList = typeOf.methods
   def methods(name: Symbol) = typeOf.methods(name)
 
   /**

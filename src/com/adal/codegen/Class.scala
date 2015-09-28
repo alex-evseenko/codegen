@@ -86,7 +86,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   override def +=(m: Callable) = {
     super.+=(m)
-    this <~ m.importsList
+    this <~ m.imports
 
     this
   }
@@ -98,12 +98,12 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 s"""
 ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
-$imports
+${imports.foldLeft("")((a, i) => a+i+Code.CRLF)}
 
 $qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""} {
   ${~this('PropsDecl).get}
   ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
-  ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
+  ${methods.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
 """
 
@@ -112,14 +112,14 @@ $qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""
 
 class AnonymousClass(base: Type) extends Class(base.pkg, base.id, base) {
   // copy a base type methods to this with an implementation
-  base.methodsList.foreach(m => this += Public::Method(m.name, m.params: _*))
+  base.methods.foreach(m => this += Public::Method(m.name, m.params: _*))
 
   def apply() = new VEval(this, this)
 
   override def holder =
 s"""
 new $sName() {
-  ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
+  ${methods.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
 """
   
@@ -134,8 +134,6 @@ class InnerClass(val outerClass: Class, name: Symbol, base: Type = JavaLangObjec
   Class(None, name, base) {
 
   outerClass += this
-
-  override def imports = ""
 }
 
 object NestedClass {

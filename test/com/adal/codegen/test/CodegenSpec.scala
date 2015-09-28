@@ -80,7 +80,7 @@ $"""
     onItemClick.get += 'Code -> $";"
   }
   // add imports list from anonymous class
-  activity <~ onItemClickListener.importsList
+  activity <~ onItemClickListener.imports
 
   activity += onCreate
   // create the method implementation 
@@ -95,7 +95,7 @@ $"""
   activity += doActivate
   activity += getId
   activity += doRefresh
-println(activity.holder)
+//println(activity.holder)
 
   //----- Methods operations -----
 
@@ -146,8 +146,7 @@ public void onItemClick(AdapterView arg1, View arg2, int arg3, long arg4) {
     code <~ Import("com.foo.bar")
 
     i1 == i2 &&
-    code.imports.indexOf("import com.foo.Bar;") == code.imports.lastIndexOf("import com.foo.Bar;") &&
-    code.imports.contains("import com.foo.bar;")
+    code.imports.size === 2 && code.imports.toString.contains("import com.foo.bar;")
   }
 
   //----- Properties operations -----

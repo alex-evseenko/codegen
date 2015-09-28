@@ -19,4 +19,6 @@ project/project/
 .worksheet
 .classpath
 .project
+.scalastyle
+scalastyle_configuration.xml
 /bin/

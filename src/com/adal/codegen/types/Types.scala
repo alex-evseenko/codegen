@@ -1,8 +1,8 @@
 /**
  * 29-AUG-2015
- * 
+ *
  * Riga, Latvia.
- * 
+ *
  */
 package com.adal.codegen.types
 

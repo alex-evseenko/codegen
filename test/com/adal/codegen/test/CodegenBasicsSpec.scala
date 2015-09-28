@@ -28,7 +28,7 @@ Implicit conversions should be imported:
 
 Code operations:
   imports list                ${
-    (new Code { this <~ Import(AndroidAppActivity); override def holder = "" }).importsList(0).toString ===
+    (new Code { this <~ Import(AndroidAppActivity); override def holder = "" }).imports(0).toString ===
     "import android.app.Activity;"
   }
   get target code by unary ~  ${~code"code${1+2+3+5}" === "code11"}
@@ -277,8 +277,8 @@ Type has getters return:
   package com.adal.codegen.test ${AndroidWidgetTextView.pkg.get === Symbol("android.widget")}
   short type name             ${AndroidWidgetTextView.sName === "TextView"}
   inner short name            ${AndroidWidgetAdapterViewOnItemClickListener.sName === "AdapterView.OnItemClickListener"}
-  list of callables           ${!JavaLangString.methodsList.isEmpty}
-  properties list             ${!Coordinate.fieldsList.isEmpty}
+  list of callables           ${!JavaLangString.methods.isEmpty}
+  properties list             ${!Coordinate.fields.isEmpty}
   a callable by its name      ${JavaLangString.methods('length).isDefined}
   a callable and apply        ${~Coordinate('getLatitude) === "getLatitude()"}
   located a property          ${Coordinate.fields('address).isDefined}
