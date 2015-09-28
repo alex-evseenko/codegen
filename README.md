@@ -101,7 +101,7 @@ Using syntax sugar operators:
 | val s = Property('s, JavaLangString, "Hola!") | String s = "Hola!"; |
 | $""" | |
 | ${ s~>M('length)() }; | s.length(); |
-| ${ s~>M('substring)(0, s~>M('length)() - 1).length() }; | s.length(); |
+| ${ s~>M('substring)(0, s~>M('length)() - 1).length() }; | s.substring(0, s.length() - 1).length(); |
 | """ | |
 
 Type

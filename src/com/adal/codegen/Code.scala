@@ -30,7 +30,7 @@ object Type {
   def apply(name: Symbol) = new Type(name)
 }
 
-class Type(val pkg: Option[Symbol], val name: Symbol) {
+class Type(val pkg: Option[Symbol], val id: Symbol) {
   private val _fieldsList = collection.mutable.Set[Parameter]()
   private val _callableList = collection.mutable.Set[Callable]()
 
@@ -38,12 +38,11 @@ class Type(val pkg: Option[Symbol], val name: Symbol) {
   def this(name: Symbol) = this(None, name)
 
 
-  def sName = name.name
-
   def fieldsList = _fieldsList.toList
   def fields(name: Symbol) = _fieldsList.find(_.name == name)
   def methodsList = _callableList.toList
-  def methods(name: Symbol) = _callableList.find(_.name == name)
+// TODO use == of Callable
+  def methods(name: Symbol, args: Value*) = _callableList.find(cll => cll.name == name && cll.theSameAs(args: _*))
 
   protected def +=(f: Parameter) = {
     _fieldsList += f
@@ -57,37 +56,36 @@ class Type(val pkg: Option[Symbol], val name: Symbol) {
     this
   }
 
-  def apply(name: Symbol, args: Value*) =
-    if (args.isEmpty && fields(name).isDefined) {
-      VEval(fields(name).get.typeOf, code"${name.name}")
-    } else if (_callableList.find(_.name == name).isDefined) {
-      _callableList.find(_.name == name).get(args:_*)
-    } else {
-      throw new IllegalArgumentException(s"Type $this doesn't contain a method $name")
-    }
+  def apply(id: Symbol, args: Value*) = {
+    val callable = methods(id, args: _*)
+
+    if (callable.isDefined)
+    	callable.get(args: _*)
+    else if (fields(id).isDefined)
+      VEval(fields(id).get.typeOf, code"${fields(id).get.sName}")
+    else
+    	throw new IllegalArgumentException(s"Type $sName neither contain method nor field ${id.name}")
+  }
 
   def pkgName = if (!isPrimitive) pkg.get.name else ""
-  def qName = if (!isPrimitive) pkgName +'.' + sName else sName
+  def sName = id.name
+  def qName = (if (!isPrimitive) pkgName +'.' else "") + sName
   def isPrimitive = pkg.isEmpty || pkg.get == Symbol("java.lang")
   def importDecl: Option[String] = if (isPrimitive) None else Some(s"import $qName;")
 
-  def canEqual(other: Any) = {
-    other.isInstanceOf[com.adal.codegen.Type]
-  }
-
   override def equals(other: Any) = {
     other match {
-      case that: com.adal.codegen.Type => that.canEqual(Type.this) && pkg == that.pkg && name == that.name
+      case that: com.adal.codegen.Type => pkg == that.pkg && id == that.id
       case _ => false
     }
   }
 
   override def hashCode() = {
     val prime = 41
-    prime * (prime + pkg.hashCode) + name.hashCode
+    prime * (prime + pkg.hashCode) + id.hashCode
   }
 
-  override def toString = if (isPrimitive) name.name else qName
+  override def toString = qName
 }
 
 
@@ -286,17 +284,18 @@ trait Value {
 
   def unary_~ = ~code
 
-  def apply(name: Symbol, args: Value*): Value =
-    if (args.isEmpty && typeOf.fields(name).isDefined) {
-      VEval(typeOf.fields(name).get.typeOf, code ++ code".${typeOf.fields(name).get.sName}")
+  def apply(id: Symbol, args: Value*) = {
+    val method = typeOf.methods(id, args: _*)
+    if (method.isDefined) {
+      VEval(method.get.typeOf, code ++ code"." ++ method.get(args:_*).code)
     } else {
-      val method = typeOf.methods(name)
-      if (method.isDefined) {
-        VEval(method.get.typeOf, code ++ code"." ++ method.get(args:_*).code)
-      } else {
-        typeOf(name, args:_*)
-      }
+      val field = typeOf.fields(id)
+      if (field.isDefined) {
+        VEval(field.get.typeOf, code ++ code".${field.get.sName}")
+      } else
+        throw new IllegalArgumentException(s"Type $typeOf doesn't contain field ${id.name}")
     }
+  }
 
   override def toString = ~code +": "+ typeOf
 }
@@ -373,17 +372,20 @@ trait Callable extends SectionedCode {
    */
   def apply(args: Value*): Value = {
     if (!checkArgsSize(args))
-      throw new IllegalArgumentException(name+": wrong amount of arguments "+(1 + args.size))
+      throw new IllegalArgumentException(signature+": wrong amount of arguments "+(1 + args.size))
 
     val p = checkArgs(args)
 
     if (p.isDefined)
-      throw new IllegalArgumentException(name+": actual args list don't match formal params list "+p.get)
+      throw new IllegalArgumentException(signature+": actual args list don't match formal params list "+p.get)
 
     VEval(typeOf, code"$sName(${args.map(~_.code).mkString(", ")})")
   }
 
   def signature = s"${typeOf.sName} $sName(${formals.map(_.typeOf.sName).mkString(", ")})"
+
+  def theSameAs(args: Value*) =
+    checkArgs(args.toSeq) == None
 
   override def equals(that: Any): Boolean =
     that.isInstanceOf[Callable] &&
@@ -391,7 +393,7 @@ trait Callable extends SectionedCode {
 
   override def hashCode = signature.hashCode()
 
-  override def toString = signature.toString
+  override def toString = signature
 }
 
 case class VEval(typ: Type, c: Code) extends Value {

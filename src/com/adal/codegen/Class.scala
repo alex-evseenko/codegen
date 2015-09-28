@@ -18,10 +18,10 @@ import com.adal.codegen.types.java._
  * @author Alex Evseenko
  *
  */
-class Interface(override val pkg: Option[Symbol], override val name: Symbol)
-  extends Type(pkg, name) with Code {
+class Interface(pkg: Option[Symbol], id: Symbol)
+  extends Type(pkg, id) with Code {
 
-  def this(typ: Type) = this(typ.pkg, typ.name)
+  def this(typ: Type) = this(typ.pkg, typ.id)
 
 //  def cleanMethods = cleanMethodsList.foldLeft("")((a, m) => a+ ~m +";"+ Code.CRLF)
 
@@ -100,7 +100,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 
 $imports
 
-$qualifiers class $sName${if (base.name != 'Object) " extends "+base.sName else ""} {
+$qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""} {
   ${~this('PropsDecl).get}
   ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
   ${methodsList.foldLeft("")((a, m) => a + ~m + CRLF)}
@@ -110,7 +110,7 @@ $qualifiers class $sName${if (base.name != 'Object) " extends "+base.sName else 
 }
 
 
-class AnonymousClass(base: Type) extends Class(base.pkg, base.name, base) {
+class AnonymousClass(base: Type) extends Class(base.pkg, base.id, base) {
   // copy a base type methods to this with an implementation
   base.methodsList.foreach(m => this += Public::Method(m.name, m.params: _*))
 

@@ -97,10 +97,10 @@ Value must:
   }
 
 Callable operations:
-  get a signature             ${
+  get a signature ${
     CleanMethod('myClean, JavaInt, JavaLangString, JavaVoid).signature === "void myClean(int, String)"
   }
-  be comparable               ${CleanMethod('getName, JavaLangString, JavaLangString) === getName}
+  be comparable ${CleanMethod('getName, JavaLangString, JavaLangString) === getName}
   get a name ${
     (new Callable {
       override val name = 'getLatitude
@@ -242,7 +242,9 @@ void caller() {
                               }}
 
 Property is a Value:
-  contains methods  ${~Property('coordinate, Coordinate)('getLatitude) === "coordinate.getLatitude()"}
+  contains methods  ${
+    ~Property('coordinate, Coordinate)('getLatitude) === "coordinate.getLatitude()"
+    }
   apply its methods ${
     val onItemClickListener = new AnonymousClass(AndroidWidgetAdapterViewOnItemClickListener)
     avoidIdentation(~Property('listView, AndroidWidgetListView)('setOnItemClickListener, onItemClickListener())) ===
@@ -271,7 +273,8 @@ new AdapterView.OnItemClickListener() {
 
 Type has getters return:
   full quilified name         ${AndroidAppActivity.qName === "android.app.Activity"}
-  package com.adal.codegen.test                ${AndroidWidgetTextView.pkg.get === Symbol("android.widget")}
+  full quilified might be short ${JavaInt.qName === "int"}
+  package com.adal.codegen.test ${AndroidWidgetTextView.pkg.get === Symbol("android.widget")}
   short type name             ${AndroidWidgetTextView.sName === "TextView"}
   inner short name            ${AndroidWidgetAdapterViewOnItemClickListener.sName === "AdapterView.OnItemClickListener"}
   list of callables           ${!JavaLangString.methodsList.isEmpty}
@@ -291,10 +294,10 @@ class DefaultModifier {
 }
 """)
   }
-  chain of modifiers ${ avoidIdentation(~(Public::Final::Static::Class('DefaultModifier))) === 
+  chain of modifiers ${ avoidIdentation(~(Public::Final::Static::Class('Modifiers))) === 
 avoidIdentation(
 """
-public final static class DefaultModifier {
+public final static class Modifiers {
 
 }
 """)
@@ -314,9 +317,14 @@ Inner class:
   }
 
 Template generation syntax sugar supports:
-  parenthesis to method call and ~> operator to lookup object members ${
-    val s = JavaLangString
-~code"""${ ~s.methods('substring).get(1) };""" === "substring(1);"
+  without syntax sugar {}
+  parenthesis to apply a method call and to lookup object property ${
+    ~JavaLangString('substring, 1)('length) === "substring(1).length()"
+  }
+  chain of method calls/field accessors ${
+    val s = Property('s, JavaLangString, "Hola!")
+    // |" - 1"
+    ~$"""${ s('substring, 0, s('length))('length) };"""() === "s.substring(0, s.length()).length();"
   }
 """ // End of the spec
 
