@@ -16,7 +16,7 @@ val onCreate = Public::Method('onCreate, 'savedInstanceState->AndroidOsBundle, J
   """)
 activity += onCreate
 ```
- 
+
 The `~` operator generates target code:
 ```
 ~activity ===
@@ -27,7 +27,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class MyActivity extends Activity {
-  
+
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.MyActivity);
@@ -64,7 +64,7 @@ val expr = new Code {
 
 The same is possible using lambda definition from the `StringContext`:
 ```
-val expr = $"""$someUserInput;"""
+val expr = $"$someUserInput;"
 ```
 
 After `someUserInput` would be defined as a string the lambda code generation (by `~ operator`) returns something like this:
@@ -74,7 +74,7 @@ After `someUserInput` would be defined as a string the lambda code generation (b
 
 It's also possible to generate a code fragment without lambda, i.e. immediately when `expr` defined (in prediction that dependents `city`, `country` have already defined in moment of `expr` initialized):
 ```
-val expr = code""""$city, $country";"""
+val expr = code"$city, $country";"
 ```
 
 If `city = "Kiev"`, `country = "Ukraine"` generation produces target code:
@@ -82,27 +82,28 @@ If `city = "Kiev"`, `country = "Ukraine"` generation produces target code:
 ~expr === "Kiev, Ukraine;"
 ```
 
-Codegen framework supports some syntax sugar operators to simplify generation of a method call and object members addressing within a template. This syntax sugar allows to use the notation that close to usually used in programming languages like Java, i.e. looks similar to `()` and `.`. The DSL allows to use parenthesis `()` to method call and `~> operator` to lookup object members. Without using the syntax sugar these operations still could be expressed using but in more verbose and unsafe way:
+Codegen framework supports some syntax sugar operators to simplify generation of a method call and object members addressing within a template. This syntax sugar uses parenthesis `()` to method call and to lookup object members by its name. Without using the syntax sugar these operations expressed in more verbose and unsafe way:
 
 | Codegen | Java |
 |---------|------|
-| // lookup a method and call it| |
+| // lookup a method and call it||
 | val s = Property('s, JavaLangString, "Hola!") | String s = "Hola!"; |
-| $""" | |
-| ${s.name}.${s.length.name}(); | s.length(); |
-| ${s.name}.${s.substring.name}(0, ${s.length.name}() - 1).length(); | s.substring(0, s.length() - 1).length(); |
-| """ | |
+| $""" ||
+| ${s.name}.${s.length.name}(); | s.length();|
+| ${s.name}.${s.substring.name}(0, ${s.length.name}() - 1).length(); | s.substring(0, s.length() - 1).length();|
+| """ ||
 
 Using syntax sugar operators:
 
 | Codegen | Java |
 |---------|------|
-| // lookup a method and call it | |
+| // lookup a method and call it ||
 | val s = Property('s, JavaLangString, "Hola!") | String s = "Hola!"; |
-| $""" | |
-| ${ s~>M('length)() }; | s.length(); |
-| ${ s~>M('substring)(0, s~>M('length)() - 1).length() }; | s.substring(0, s.length() - 1).length(); |
-| """ | |
+| $""" ||
+| ${ s('length) }; | s.length();|
+| ${ s('substring, 0, s('length) - 1)('length) }; | s.substring(0, s.length() - 1).length();|
+| """ ||
+
 
 Type
 ----

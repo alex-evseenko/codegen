@@ -86,7 +86,13 @@ Value must:
       override def code = code"Long.valueOf(${65635 + 1})"
     } === "Long.valueOf(65636)" 
   }
-  transitively contcatenates with other values ${
+  be comparable with other Values ${
+    new Value {
+      override val typeOf = JavaLangString
+      override def code = code""""Hola!""""
+    } === new VStr("Hola!")
+  }
+  consequently contcatenates with other values ${
     val getCoordinate = Method('getCoordinate, JavaLangString, Coordinate)
     ~getCoordinate("Street address")('getLatitude)('floatValue) ===
     """getCoordinate("Street address").getLatitude().floatValue()"""
@@ -94,6 +100,10 @@ Value must:
   address its properties ${
     ~Method('getCoordinate, JavaLangString, Coordinate)("Street address")('address)('length) ===
     """getCoordinate("Street address").address.length()"""
+  }
+  implicitely converts values and support operations ${
+    val some = true
+    ~$"${!(VBool(some) &&~ (1.5f <=~ 3.14159))}" === "!(true && 1.5f <= 3.14159)"
   }
 
 Callable operations:
@@ -135,10 +145,10 @@ Callable operations:
       override val name = 'getLatitude
       override val params = Seq(Parameter(JavaLangString), Parameter(JavaLangFloat))
       override def holder = ""
-     })(EStr("Duntes iela, 28-201")) === """getLatitude("Duntes iela, 28-201")"""
+     })(new VStr("Duntes iela, 28-201")) === """getLatitude("Duntes iela, 28-201")"""
   }
   apply arguments transitively ${
-    val address = EStr("Duntes iela, 28-201")
+    val address = new VStr("Duntes iela, 28-201")
     val normalizeAddr = new Callable {
       override val name = 'normalizeAddr
       override val params = Seq(Parameter(JavaLangString), Parameter(JavaLangString))
@@ -323,8 +333,7 @@ Template generation syntax sugar supports:
   }
   chain of method calls/field accessors ${
     val s = Property('s, JavaLangString, "Hola!")
-    // |" - 1"
-    ~$"""${ s('substring, 0, s('length))('length) };"""() === "s.substring(0, s.length()).length();"
+    ~$"""${ s('substring, 0, s('length) -~ 1)('length) };""" === "s.substring(0, s.length() - 1).length();"
   }
 """ // End of the spec
 

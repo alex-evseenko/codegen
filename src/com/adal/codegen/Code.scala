@@ -94,13 +94,13 @@ class Type(val pkg: Option[Symbol], val id: Symbol) {
 object Code {
   val CRLF = System.getProperty("line.separator") // "\r\n" for Win
 
-  implicit def exprParamWrapper(expr: Parameter): EParam = new EParam(expr)
-  implicit def exprBooleanWrapper(expr: Boolean): EBoolean = new EBoolean(expr)
-  implicit def exprIntWrapper(expr: Int): EInt = new EInt(expr)
-  implicit def exprLongWrapper(expr: Long): ELong = new ELong(expr)
-  implicit def exprFloatWrapper(expr: Float): EFloat = new EFloat(expr)
-  implicit def exprDoubleWrapper(expr: Double): EDouble = new EDouble(expr)
-  implicit def exprStringWrapper(expr: String): EStr = new EStr(expr)
+  implicit def exprParamWrapper(expr: Parameter): VParam = VParam(expr)
+  implicit def exprBooleanWrapper(expr: Boolean): VBool = new VBool(expr)
+  implicit def exprIntWrapper(expr: Int): VInt = new VInt(expr)
+  implicit def exprLongWrapper(expr: Long): VLong = new VLong(expr)
+  implicit def exprFloatWrapper(expr: Float): VFloat = new VFloat(expr)
+  implicit def exprDoubleWrapper(expr: Double): VDouble = new VDouble(expr)
+  implicit def exprStringWrapper(expr: String): VStr = new VStr(expr)
   implicit def typeToParam(typ: Type): Parameter = new Parameter(typ)
   implicit def entryToParam(entry: (Symbol, Type)): Parameter = new Parameter(entry)
 
@@ -127,6 +127,11 @@ object Code {
   implicit def valueToLCode(v: Value): LCode = () => v.code
   implicit def entryToLCode(entry: (Symbol, Value)): (Symbol, LCode) = entry._1 -> {() => entry._2.code}
   implicit def bynameToNoarg[a](a: => a): () => a = () => a
+  implicit def lcodeToCode(lc: LCode): Code = lc()
+  implicit def vevalToVint(eval: VEval): VInt = eval.typeOf match {
+    case JavaInt => VInt(eval.code)
+    case _ => throw new IllegalArgumentException("Cannot convert to VInt: " + eval)
+  }
 
   implicit class LambdaCodeHelper(val sc: StringContext) extends AnyVal {
 
@@ -137,7 +142,6 @@ object Code {
         override def holder = scala.StringContext(sc.parts: _*).s(unpacked: _*)
       }
     }
-
   }
 
 }
@@ -205,6 +209,12 @@ trait Code {
       override def holder = Code.this.holder + c.holder
     }
 
+  override def equals(that: Any): Boolean =
+    that.isInstanceOf[Code] &&
+    holder == (that.asInstanceOf[Code]).holder
+
+  override def hashCode: Int = holder.hashCode()
+
   override def toString: String = holder
 }
 
@@ -267,20 +277,30 @@ trait Value {
   def unary_~ = ~code
 
   def apply(id: Symbol, args: Value*): VEval = {
+    def eval(typ: Type, c: Code) = typ match {
+      case JavaInt => VInt(c)
+      case _ => VEval(typ, c)
+    }
+
     val method = typeOf.methods(id, args: _*)
     if (method.isDefined) {
-      VEval(method.get.typeOf, code ++ code"." ++ method.get(args:_*).code)
+      eval(method.get.typeOf, code ++ code"." ++ method.get(args:_*).code)
     } else {
       val field = typeOf.fields(id)
       if (field.isDefined) {
-        VEval(field.get.typeOf, code ++ code".${field.get.sName}")
+        eval(field.get.typeOf, code ++ code".${field.get.sName}")
       } else {
         throw new IllegalArgumentException(s"Type $typeOf doesn't contain field ${id.name}")
       }
     }
   }
 
-  override def toString: String = ~code +": "+ typeOf
+  override def equals(that: Any): Boolean =
+    that.isInstanceOf[Value] &&
+    typeOf == (that.asInstanceOf[Value]).typeOf &&
+    code == (that.asInstanceOf[Value]).code
+
+  override def toString: String = ~code + ": " + typeOf
 }
 
 /**
@@ -384,49 +404,75 @@ trait Callable extends SectionedCode {
   override def toString: String = signature
 }
 
-case class VEval(typ: Type, c: Code) extends Value {
+
+object VEval {
+  def apply(typ: Type, c: Code): VEval = new VEval(typ, c)
+}
+
+class VEval(typ: Type, c: Code) extends Value {
   override def typeOf: Type = typ
   override def code: Code = c
+  protected def op2[T <: VEval](op: Code, r: T): Code = code ++ op ++ r.code
 }
 
-abstract class ValueExpr[T](val expr: T) extends Value {
-  override def code: Code = code"${expr.toString}"
+case class VParam(expr: Parameter) extends VEval(expr.typeOf, $"${expr.sName}")
 
-  override def equals(that: Any): Boolean =
-    that.isInstanceOf[ValueExpr[T]] &&
-    expr == (that.asInstanceOf[ValueExpr[T]]).expr
-
-  override def hashCode: Int = expr.hashCode()
+object VBool {
+  def apply(expr: Boolean): VBool = new VBool(expr)
 }
 
-case class EParam(override val expr: Parameter) extends ValueExpr(expr) {
-  override def typeOf: Type = expr.typeOf
-  override def code: Code = code"${expr.sName}"
+case class VBool(c: Code) extends VEval(JavaBoolean, c) {
+  def this(expr: Boolean) = this($"$expr")
+
+  def unary_! = VBool(code"!(" ++ code ++ code")")
+  def &&~(r: VBool) = VBool(op2(code" && ", r))
+  def ||~(r: VBool) = VBool(op2(code" || ", r))
+  def ==~(r: VBool) = VBool(op2(code" == ", r))
+  def !=~(r: VBool) = VBool(op2(code" != ", r))
 }
 
-case class EBoolean(override val expr: Boolean) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaBoolean
+abstract class VNumeric[T <: Type](typ: Type, c: Code) extends VEval(typ, c) {
+  protected def create(c: Code): VNumeric[T]
+
+  def -~(r: VNumeric[T]): VNumeric[T] = create(op2(code" - ", r))
+  def +~(r: VNumeric[T]): VNumeric[T] = create(op2(code" + ", r))
+  def *~(r: VNumeric[T]): VNumeric[T] = create(op2(code" * ", r))
+  def /~(r: VNumeric[T]): VNumeric[T] = create(op2(code" / ", r))
+  def %~(r: VNumeric[T]): VNumeric[T] = create(op2(code" % ", r))
+  def >>~(r: VNumeric[T]) = VBool(op2(code" > ", r))
+  def >>=~(r: VNumeric[T]) = VBool(op2(code" >= ", r))
+  def <<~(r: VNumeric[T]) = VBool(op2(code" < ", r))
+  def <=~(r: VNumeric[T]) = VBool(op2(code" <= ", r))
 }
 
-case class EInt(override val expr: Int) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaInt
+case class VInt(c: Code) extends VNumeric(JavaInt, c) {
+  def this(expr: Int) = this($"$expr")
+
+  override protected def create(c: Code) = VInt(c)
 }
 
-case class ELong(override val expr: Long) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaLong
+case class VLong(c: Code) extends VNumeric(JavaLong, c) {
+  def this(expr: Long) = this($"${expr}l")
+
+  override protected def create(c: Code) = VLong(c)
 }
 
-case class EFloat(override val expr: Float) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaFloat
+case class VFloat(c: Code) extends VNumeric(JavaFloat, c) {
+  def this(expr: Float) = this($"${expr}f")
+
+  override protected def create(c: Code) = VFloat(c)
 }
 
-case class EDouble(override val expr: Double) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaDouble
+case class VDouble(c: Code) extends VNumeric(JavaDouble, c) {
+  def this(expr: Double) = this($"$expr")
+
+  override protected def create(c: Code) = VDouble(c)
 }
 
-case class EStr(override val expr: String) extends ValueExpr(expr) {
-  override def typeOf: Type = JavaLangString
-  override def code: Code = code""""${expr.toString}""""
+case class VStr(c: Code) extends VEval(JavaLangString, c) {
+  def this(expr: String) = this($""""$expr"""")
+
+  def +~(r: VStr): VStr = VStr(op2(code" + ", r))
 }
 
 
