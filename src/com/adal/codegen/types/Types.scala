@@ -46,14 +46,19 @@ package object android {
 
   case class AndroidApp(typ: Symbol) extends Type(Symbol("android.app"), typ)
   case class AndroidOs(typ: Symbol) extends Type(Symbol("android.os"), typ)
+  case class AndroidNet(typ: Symbol) extends Type(Symbol("android.net"), typ)
   case class AndroidContent(typ: Symbol) extends Type(Symbol("android.content"), typ)
   case class AndroidWidget(typ: Symbol) extends Type(Symbol("android.widget"), typ)
   case class AndroidView(typ: Symbol) extends Type(Symbol("android.view"), typ)
+  case class AndroidDatabase(typ: Symbol) extends Type(Symbol("android.database"), typ)
   case class AndroidDatabaseSqlite(typ: Symbol) extends Type(Symbol("android.database.sqlite"), typ)
 
   object AndroidAppActivity extends AndroidApp('Activity)
   object AndroidOsBundle extends AndroidOs('Bundle)
+  object AndroidNetUri extends AndroidNet('Uri)
   object AndroidContentIntent extends AndroidContent('Intent)
+  object AndroidContentContext extends AndroidContent('Context)
+  object AndroidContentContentValues extends AndroidContent('ContentValues)
   object AndroidContentProvider extends AndroidContent('ContentProvider)
   object AndroidWidgetListView extends AndroidWidget('ListView) {
     this += CleanMethod('setOnItemClickListener, AndroidWidgetAdapterViewOnItemClickListener, JavaVoid)
@@ -70,6 +75,7 @@ package object android {
     this += CleanMethod('onItemClick, AndroidWidgetAdapterView, AndroidViewView, JavaInt, JavaLong, JavaVoid)
   }
 
+  object AndroidDatabaseCursor extends AndroidDatabase('Cursor)
   object SQLiteOpenHelper extends AndroidDatabaseSqlite('SQLiteOpenHelper)
   object SQLiteDatabase extends AndroidDatabaseSqlite('SQLiteDatabase)
 }
