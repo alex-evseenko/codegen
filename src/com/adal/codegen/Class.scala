@@ -58,6 +58,8 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 // FIXMY use instead Type#fieldsList
   private val _props = collection.mutable.Set[Property]()
 
+  override def imports: List[Import] = (imps.toList ::: nestedClasses.flatMap(_.imports)).distinct
+
   def propsList = _props.toList
 
   def propsDecl = _props.foldLeft("")((a, p) => a+p.decl+Code.CRLF)
@@ -69,7 +71,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
     this
   }
 
-  private def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
+  protected def qualifiers = modifiersChain.reverse.map(_.value.name).mkString(" ")
 
   def +=(p: Property) = {
     _props += p
@@ -135,6 +137,17 @@ class InnerClass(val outerClass: Class, name: Symbol, base: Type = JavaLangObjec
   Class(None, name, base) {
 
   outerClass += this
+
+
+  override def holder =
+s"""
+$qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""} {
+  ${~this('PropsDecl).get}
+  ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
+  ${methods.foldLeft("")((a, m) => a + ~m + CRLF)}
+}
+"""
+
 }
 
 object NestedClass {

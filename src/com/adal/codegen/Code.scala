@@ -174,7 +174,7 @@ trait Code {
   /**
    * List of imports that this code referenced to.
    */
-  private val imps = collection.mutable.Set[Import]()
+  protected val imps = collection.mutable.Set[Import]()
 
   /**
    * Holds the code.
