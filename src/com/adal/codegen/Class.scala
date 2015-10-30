@@ -38,6 +38,7 @@ object Class {
   def apply(pkg: Symbol, name: Symbol) = new Class(Some(pkg), name)
   def apply(pkg: Symbol, name: Symbol, base: Type) = new Class(Some(pkg), name, base)
   def apply(name: Symbol) = new Class(None, name)
+  def apply(name: Symbol, base: Type) = new Class(None, name, base)
   def apply(pkg: String, name: Symbol) = new Class(Some(Symbol(pkg)), name)
   def apply(pkg: String, name: Symbol, base: Type) = new Class(Some(Symbol(pkg)), name, base)
 }

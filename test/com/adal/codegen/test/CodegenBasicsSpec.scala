@@ -296,8 +296,27 @@ Type has getters return:
   true if the type is primitive ${JavaVoid.isPrimitive}
   import statement if non primitive ${AndroidAppActivity.importDecl.get === "import android.app.Activity;"}
 
-Class can contain modifiers:
-  default ${ avoidIdentation(~Class('DefaultModifier)) === 
+Class can contain:
+  constructor ${
+    val dbHelper = Protected::Final::Class('MainDatabaseHelper, SQLiteOpenHelper)
+    dbHelper += Public::Constructor(dbHelper, 'context -> AndroidContentContext) {
+$"""super(context, "db", null, "1.0");"""
+    }
+    avoidIdentation(~dbHelper) ===
+    avoidIdentation(
+"""
+import android.content.Context;
+import android.database.sqlite.SQLiteOpenHelper;
+
+protected final class MainDatabaseHelper extends SQLiteOpenHelper {
+
+public MainDatabaseHelper(Context context) {
+super(context, "db", null, "1.0");
+}
+
+}""")
+  }
+  default modifiers ${ avoidIdentation(~Class('DefaultModifier)) === 
  avoidIdentation(
 """
 class DefaultModifier {

@@ -57,7 +57,7 @@ if (_params.size > 1)
 
   override val params = if (_params.isEmpty) Seq(Parameter(JavaVoid)) else _params
 
-  private var visibility: Modifier = Default
+  protected var visibility: Modifier = Default
   private val _dependentMethods = ArrayBuffer[Method]()
 
   def this(name: String, args: Parameter*) = this(Symbol(name), args: _*)
@@ -100,3 +100,11 @@ $decl {
   def ~>(c: Class) = c += this
 }
 
+object Constructor {
+  def apply(owner: Class, params: Parameter*) = new Constructor(owner, params: _*)
+}
+
+class Constructor(owner: Class, _params: Parameter*) extends Method(owner.id, _params: _*) {
+  override def decl: String =
+    s"""$visibility ${sName}(${params.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""
+}
