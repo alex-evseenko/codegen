@@ -57,7 +57,7 @@ if (_params.size > 1)
 
   override val params = if (_params.isEmpty) Seq(Parameter(JavaVoid)) else _params
 
-  protected var visibility: Modifier = Default
+  protected var modifiersChain =  collection.mutable.ListBuffer[Modifier]()
   private val _dependentMethods = ArrayBuffer[Method]()
 
   def this(name: String, args: Parameter*) = this(Symbol(name), args: _*)
@@ -80,7 +80,7 @@ if (_params.size > 1)
   }
 
   def decl: String =
-    s"""$visibility ${typeOf.sName} ${sName}(${formals.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""
+    s"""$qualifiers ${typeOf.sName} ${sName}(${formals.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""
 
   override def holder =
 s"""
@@ -89,10 +89,14 @@ $decl {
 }
 """
 
-  def ::(v: Modifier) = {
-    visibility = v
+  def ::(m: Modifier) = {
+    modifiersChain += m
     this
   }
+
+  protected def qualifiers = modifiersChain.reverse.map(m => {
+    m.value.name + (if (m == Override) "\n" else "")
+  }).mkString(" ")
 
   /**
    * Add the method to passed class.
@@ -106,5 +110,5 @@ object Constructor {
 
 class Constructor(owner: Class, _params: Parameter*) extends Method(owner.id, _params: _*) {
   override def decl: String =
-    s"""$visibility ${sName}(${params.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""
+    s"""$qualifiers ${sName}(${params.map(p => p.typeOf.sName +" "+ p.sName).mkString(", ")})"""
 }
