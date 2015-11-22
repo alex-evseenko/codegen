@@ -60,8 +60,6 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   override def imports: List[Import] = (imps.toList ::: nestedClasses.flatMap(_.imports)).distinct
 
-  def className = sName + ".java"
-
   def propsList = _props.toList
 
   def propsDecl = _props.foldLeft("")((a, p) => a+p.decl+Code.CRLF)
