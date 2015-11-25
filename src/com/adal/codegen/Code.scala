@@ -270,6 +270,17 @@ trait SectionedCode extends Code {
 
 }
 
+class XmlCode(val rootTag: String) extends SectionedCode {
+
+  protected override def holder =
+    s"<$rootTag>\n$code\n</$rootTag>"
+
+  def unary_!(): scala.xml.Elem = {
+    scala.xml.XML.loadString( ~this )
+  }
+}
+
+
 trait Value {
   def typeOf: Type
   def code: Code
