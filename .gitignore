@@ -22,3 +22,7 @@ project/project/
 .scalastyle
 scalastyle_configuration.xml
 /bin/
+
+# IntelliJ Idea specific
+.idea/
+
