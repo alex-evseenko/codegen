@@ -270,13 +270,21 @@ trait SectionedCode extends Code {
 
 }
 
+
+import xml._
+
 class XmlCode(val rootTag: String) extends SectionedCode {
+  val printer = new PrettyPrinter(80, 2)
 
   protected override def holder =
-    s"<$rootTag>\n$code\n</$rootTag>"
+s"""
+<?xml version="1.0" encoding="utf-8"?>
+${printer.formatNodes(!this)}
+"""
 
   def unary_!(): scala.xml.Elem = {
-    scala.xml.XML.loadString( ~this )
+    val innerTags = if (code == "") Text("") else XML.loadString( code )
+    Elem(null, rootTag, Null, TopScope, true, innerTags)
   }
 }
 

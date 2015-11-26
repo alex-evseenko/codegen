@@ -354,6 +354,14 @@ Template generation syntax sugar supports:
     val s = Property('s, JavaLangString, "Hola!")
     ~$"""${ s('substring, 0, s('length) -~ 1)('length) };""" === "s.substring(0, s.length() - 1).length();"
   }
+
+  XmlCode generation functionality allows:
+    to create an xml document dynamically ${
+    val layout = new XmlCode("LinearLayout")
+    layout += 'editText1 -> $"""<EditText id="editText1" />"""
+    !layout === <LinearLayout><EditText id="editText1"/></LinearLayout>
+  }
+}
 """ // End of the spec
 
 
