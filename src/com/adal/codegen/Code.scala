@@ -227,15 +227,15 @@ trait Code {
  * String interpolation of code fragments is postponed till calling holder.
  */
 trait SectionedCode extends Code {
-  protected val scs = collection.mutable.Map[Symbol, List[LCode]]()
+  protected val scs = collection.mutable.LinkedHashMap[Symbol, List[LCode]]()
   this += 'Code
 
   protected override def holder = code
 
-  def sections: List[(Symbol, List[LCode])] = scs.toList
+  def sections: List[(Symbol, List[LCode])] = scs.map(section => (section._1, section._2)).toList
 
   def code: String =
-    scs.values.foldLeft("")((a, llc) => a + ~toCode(llc))
+    sections.foldLeft("")((a, section) => a + ~toCode(section._2))
 
   def apply(secName: Symbol): Option[Code] =
     if (scs contains secName) {

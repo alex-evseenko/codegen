@@ -63,8 +63,20 @@ EmptyCode object:
 Sectioned Code:
   has a default section       ${onCreateDialog('Code).isDefined}
   can locate a section        ${~(new SectionedCode { this += 'init -> $"initcode"})('init).get === "initcode"}
-  apply contains all sections ${~new SectionedCode { this += 'init -> $"init"; this += 'Code -> $"code"} === "initcode"}
+  generate content of sections ${~new SectionedCode { this += 'init -> $"init"; this += 'listener -> $"code"} === "initcode"}
   retrieves secions as a list ${new SectionedCode {}.sections(0)._1 === 'Code}
+  support insertion order of sections ${
+    new SectionedCode {
+      this += 'inits -> $"init"; this += 'listeners -> $"listener"
+    }.sections.map(section => section._1) === List('Code, 'inits, 'listeners)
+  }
+  support insertion order within a section ${
+    val scode = new SectionedCode {
+      this += 'inits -> $"init"
+      this += 'listeners -> $"listener1" += 'listeners -> $"listener2" += 'listeners -> $"listener3"
+    }
+    scode('listeners).get === code"listener1listener2listener3"
+  }
 
 *Sectioned code is mutable:
   adding a new section        ${
@@ -366,11 +378,10 @@ Template generation syntax sugar supports:
     val textView1 = <TextView android:text={text} android:id={"@+id/" + name1} android:layout_width="fill_parent" android:layout_height="wrap_content" />
     val name2 = "editText1"
     val editText1 = <EditText android:id={"@+id/" + name2} android:layout_width="fill_parent" android:layout_height="wrap_content" />
-    layout += 'textView1 -> $"$textView1"
-    layout += 'editText1 -> $"$editText1"
+    layout += 'textView1 -> $"$textView1" += 'editText1 -> $"$editText1"
 
     !layout ===
-      <LinearLayout android:orientation="vertical"><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/editText1"/><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/textView1" android:text="Total: "/></LinearLayout>
+      <LinearLayout android:orientation="vertical"><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/textView1" android:text="Total: "/><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/editText1"/></LinearLayout>
   }
 }
 """ // End of the spec
