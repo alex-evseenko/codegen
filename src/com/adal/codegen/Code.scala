@@ -268,13 +268,15 @@ trait SectionedCode extends Code {
   def +=(lc: LCode): SectionedCode =
     this += 'Code -> lc
 
+  override def toString: String =
+    scs.keySet.mkString("SCS[", ", ", "]")
 }
 
 
 import xml._
 
-class XmlCode(val rootTag: String) extends SectionedCode {
-  val printer = new PrettyPrinter(80, 2)
+class XmlCode(val rootTag: String, val prefix: MetaData = Null) extends SectionedCode {
+  val printer = new PrettyPrinter(120, 2)
 
   protected override def holder =
 s"""
@@ -282,10 +284,14 @@ s"""
 ${printer.formatNodes(!this)}
 """
 
-  def unary_!(): scala.xml.Elem = {
-    val innerTags = if (code == "") Text("") else XML.loadString( code )
-    Elem(null, rootTag, Null, TopScope, true, innerTags)
-  }
+  def unary_!(): scala.xml.Elem =
+    if (code == "") {
+      Elem(null, rootTag, prefix, TopScope, true)
+    } else {
+      val tags = sections.flatten(s => s._2).map(lc => xml.XML.loadString( ~lc() ))
+      Elem(null, rootTag, prefix, TopScope, true, tags: _*)
+    }
+
 }
 
 

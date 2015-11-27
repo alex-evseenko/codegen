@@ -15,6 +15,8 @@ import com.adal.codegen.types.android._
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 
+import scala.xml.{Null, PrefixedAttribute}
+
 /**
  * @author Alex Evseenko
  *
@@ -357,9 +359,18 @@ Template generation syntax sugar supports:
 
   XmlCode generation functionality allows:
     to create an xml document dynamically ${
-    val layout = new XmlCode("LinearLayout")
-    layout += 'editText1 -> $"""<EditText id="editText1" />"""
-    !layout === <LinearLayout><EditText id="editText1"/></LinearLayout>
+    val prefix = new PrefixedAttribute("android", "orientation", "vertical", Null)
+    val layout = new XmlCode("LinearLayout", prefix)
+    val name1 = "textView1"
+    val text = "Total: "
+    val textView1 = <TextView android:text={text} android:id={"@+id/" + name1} android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    val name2 = "editText1"
+    val editText1 = <EditText android:id={"@+id/" + name2} android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    layout += 'textView1 -> $"$textView1"
+    layout += 'editText1 -> $"$editText1"
+
+    !layout ===
+      <LinearLayout android:orientation="vertical"><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/editText1"/><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/textView1" android:text="Total: "/></LinearLayout>
   }
 }
 """ // End of the spec
