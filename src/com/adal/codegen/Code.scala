@@ -288,7 +288,7 @@ ${printer.formatNodes(!this)}
     if (code == "") {
       Elem(null, rootTag, prefix, TopScope, true)
     } else {
-      val tags = sections.flatten(s => s._2).map(lc => xml.XML.loadString( ~lc() ))
+      val tags = sections.flatten(s => s._2).filterNot(~_() == "").map(lc => xml.XML.loadString( ~lc() ))
       Elem(null, rootTag, prefix, TopScope, true, tags: _*)
     }
 
