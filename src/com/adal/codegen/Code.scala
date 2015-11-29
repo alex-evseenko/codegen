@@ -275,14 +275,19 @@ trait SectionedCode extends Code {
 
 import xml._
 
-class XmlCode(val rootTag: String, val prefix: MetaData = Null) extends SectionedCode {
+class XmlCode(val rootTag: String, val prefix: MetaData = Null, val isRoot: Boolean = true) extends SectionedCode {
   val printer = new PrettyPrinter(120, 2)
 
-  protected override def holder =
-s"""
-<?xml version="1.0" encoding="utf-8"?>
+  protected override def holder = {
+    (if (isRoot) {
+      """<?xml version="1.0" encoding="utf-8"?>"""
+    } else {
+      ""
+    }) +
+      s"""
 ${printer.formatNodes(!this)}
 """
+  }
 
   def unary_!(): scala.xml.Elem =
     if (code == "") {

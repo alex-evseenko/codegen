@@ -383,6 +383,12 @@ Template generation syntax sugar supports:
     !layout ===
       <LinearLayout android:orientation="vertical"><TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/textView1" android:text="Total: "/><EditText android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/editText1"/></LinearLayout>
   }
+  to insert nested XmlCode-fragments dynamically ${
+    val layout = new XmlCode("LinearLayout")
+    val inner = new XmlCode("TextView")
+    layout += 'textView1 -> $"${~inner}"
+    !layout === <LinearLayout><TextView /></LinearLayout>
+  }
 }
 """ // End of the spec
 
