@@ -389,6 +389,21 @@ Template generation syntax sugar supports:
     layout += 'textView1 -> $"${~inner}"
     !layout === <LinearLayout><TextView /></LinearLayout>
   }
+  to add nested xml-element dynamically ${
+    val layout = new XmlCode("LinearLayout")
+    val inner = <TextView />
+    layout += 'inner -> $"$inner"
+    layout += 'inner -> $"<EditText />"
+    !layout === <LinearLayout><TextView /><EditText/></LinearLayout>
+  }
+  to insert sub-element dynamically ${
+    val manifest = new XmlCode("manifest")
+    val activity = <activity/>
+    manifest += 'activity1 -> $"$activity"
+    manifest /= 'activity1 -> <intent-filter/>
+    manifest /= 'activity1 -> <intent-filter/>
+    !manifest === <manifest><activity><intent-filter/><intent-filter/></activity></manifest>
+  }
 }
 """ // End of the spec
 

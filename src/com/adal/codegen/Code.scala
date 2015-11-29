@@ -278,13 +278,37 @@ import xml._
 class XmlCode(val rootTag: String, val prefix: MetaData = Null, val isRoot: Boolean = true) extends SectionedCode {
   val printer = new PrettyPrinter(120, 2)
 
+  def /=(entry: (Symbol, Elem)): XmlCode = {
+    def addChild(n: Elem, newChild: Elem): Elem = n match {
+      case Elem(prefix, label, attribs, scope, child @ _*) =>
+        Elem(prefix, label, attribs, scope, true, child ++ newChild : _*)
+      case _ => throw new IllegalArgumentException("Can only add children to elements!")
+    }
+
+    if (scs.keySet.contains(entry._1)) {
+      val llc = scs.find(s => s._1 == entry._1).get._2
+      if (llc.isEmpty || llc.size > 1) {
+        throw new IllegalStateException(s"${entry._1} contains more than one tags.")
+      }
+
+      val root = xml.XML.loadString( ~llc(0) )
+      val updated = addChild(root, entry._2)
+
+      scs(entry._1) = List($"$updated")
+    } else {
+      throw new IllegalArgumentException(s"There is no section ${entry._1}")
+    }
+
+    this
+  }
+
   protected override def holder = {
     (if (isRoot) {
       """<?xml version="1.0" encoding="utf-8"?>"""
     } else {
       ""
     }) +
-      s"""
+s"""
 ${printer.formatNodes(!this)}
 """
   }
@@ -293,7 +317,7 @@ ${printer.formatNodes(!this)}
     if (code == "") {
       Elem(null, rootTag, prefix, TopScope, true)
     } else {
-      val tags = sections.flatten(s => s._2).filterNot(~_() == "").map(lc => xml.XML.loadString( ~lc() ))
+      val tags = sections.flatten(_._2).filterNot(~_ == "").map(lc => xml.XML.loadString( ~lc ))
       Elem(null, rootTag, prefix, TopScope, true, tags: _*)
     }
 
