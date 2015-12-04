@@ -25,6 +25,7 @@ package java {
   object JavaDouble extends Type('double)
 
   case class JavaLang(typ: Symbol) extends Type(Symbol("java.lang"), typ)
+  case class JavaUtil(typ: Symbol) extends Type(Symbol("java.util"), typ)
 
   object JavaLangObject extends JavaLang('Object)
   object JavaLangBoolean extends JavaLang('Boolean)
@@ -39,6 +40,8 @@ package java {
     this += CleanMethod('substring, JavaInt, JavaLangString)
     this += CleanMethod('substring, JavaInt, JavaInt, JavaLangString)
   }
+
+  object JavaUtilCalendar extends JavaUtil('Calendar)
 }
 
 package object android {
