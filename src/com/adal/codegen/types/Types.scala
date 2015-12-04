@@ -57,6 +57,7 @@ package object android {
   object AndroidAppDialog extends AndroidApp('Dialog)
   object AndroidAppAlertDialog extends AndroidApp('AlertDialog)
   object AndroidAppDatePickerDialog extends AndroidApp('DatePickerDialog)
+  object AndroidAppTimePickerDialog extends AndroidApp('TimePickerDialog)
   object AndroidOsBundle extends AndroidOs('Bundle)
   object AndroidNetUri extends AndroidNet('Uri)
   object AndroidContentIntent extends AndroidContent('Intent)
@@ -70,6 +71,8 @@ package object android {
   object AndroidWidgetEditText extends AndroidWidget('EditText)
   object AndroidWidgetButton extends AndroidWidget('Button)
   object AndroidWidgetCheckBox extends AndroidWidget('CheckBox)
+  object AndroidWidgetDatePicker extends AndroidWidget('DatePicker)
+  object AndroidWidgetTimePicker extends AndroidWidget('TimePicker)
   object AndroidWidgetAdapterView extends AndroidWidget('AdapterView)
   object AndroidViewView extends AndroidView('View)
 
