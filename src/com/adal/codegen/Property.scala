@@ -25,6 +25,8 @@ object Property {
 
   def apply(name: Symbol, typ: Type, initVal : Value) = new Property(name, typ, Some(initVal))
 
+  def apply(name: Symbol, typ: Type, init: Code) = new Property(name, typ, None, Some(init))
+
   def apply(name: Symbol, typ: Type, initVal : Value, init: Code) = new Property(name, typ, Some(initVal), Some(init))
 }
 
