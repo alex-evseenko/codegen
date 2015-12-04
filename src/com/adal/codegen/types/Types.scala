@@ -54,6 +54,9 @@ package object android {
   case class AndroidDatabaseSqlite(typ: Symbol) extends Type(Symbol("android.database.sqlite"), typ)
 
   object AndroidAppActivity extends AndroidApp('Activity)
+  object AndroidAppDialog extends AndroidApp('Dialog)
+  object AndroidAppAlertDialog extends AndroidApp('AlertDialog)
+  object AndroidAppDatePickerDialog extends AndroidApp('DatePickerDialog)
   object AndroidOsBundle extends AndroidOs('Bundle)
   object AndroidNetUri extends AndroidNet('Uri)
   object AndroidContentIntent extends AndroidContent('Intent)
