@@ -55,7 +55,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   private val modifiersChain = collection.mutable.ListBuffer[Modifier]()
   private val _nestedClasses = collection.mutable.Set[InnerClass]()
-// FIXMY use instead Type#fieldsList
+// FIXME use instead Type#fieldsList
   private val _props = collection.mutable.Set[Property]()
 
   override def imports: List[Import] = (imps.toList ::: nestedClasses.flatMap(_.imports)).distinct
@@ -64,9 +64,9 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
 
   def propsList = _props.toList
 
-  def propsDecl = _props.foldLeft("")((a, p) => a+p.decl+Code.CRLF)
+  def propsDecl = _props.foldLeft("")((a, p) => a + p.decl + Code.CRLF)
 
-  def propsInit = _props.foldLeft("")((a, p) => a+p.init+Code.CRLF)
+  def propsInit = _props.filter(_.init.isDefined).foldLeft("")((a, p) => a + ~p.init.get + Code.CRLF)
 
   def ::(modifier: Modifier) = {
     modifiersChain += modifier

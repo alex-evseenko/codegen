@@ -27,7 +27,9 @@ object Property {
 }
 
 
-class Property(val sym: Symbol, override val typeOf: Type, val initVal: Option[Value] = None) extends Value {
+class Property(val sym: Symbol, override val typeOf: Type,
+               val initVal: Option[Value] = None,
+               val init: Option[Code] = None) extends Value {
   if (initVal.isDefined && initVal.get.typeOf != typeOf) {
     throw new IllegalArgumentException(s"Property $name initialized by different type.")
   }
@@ -54,9 +56,6 @@ class Property(val sym: Symbol, override val typeOf: Type, val initVal: Option[V
    */
   def decl = s"""$qualifiers ${typeOf.sName} $name${if (initVal.isDefined) " = "+ ~initVal.get else ""};"""
 
-// FIXME exclude it as Android-specific
-  def init = s"""$name = (${typeOf.sName}) findViewById(R.id.$name);"""
-
   override def code = code"""$name"""
 
   override def toString = name
@@ -73,6 +72,4 @@ class Const(sym: Symbol, typeOf: Type, value: Value) extends Property(sym, typeO
   Final::Static::this
 
   def this(name: Symbol, initVal : Value) = this(name, initVal.typeOf, initVal)
-
-  override def init = throw new IllegalStateException("Constant cannot be re-assigned. ")
 }
