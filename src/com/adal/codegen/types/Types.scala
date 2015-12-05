@@ -68,6 +68,7 @@ package object android {
   object AndroidContentContentValues extends AndroidContent('ContentValues)
   object AndroidContentProvider extends AndroidContent('ContentProvider)
   object AndroidWidgetListView extends AndroidWidget('ListView) {
+    this += CleanMethod('setAdapter, AndroidWidgetListAdapter, JavaVoid)
     this += CleanMethod('setOnItemClickListener, AndroidWidgetAdapterViewOnItemClickListener, JavaVoid)
   }
   object AndroidWidgetTextView extends AndroidWidget('TextView)
@@ -77,6 +78,9 @@ package object android {
   object AndroidWidgetDatePicker extends AndroidWidget('DatePicker)
   object AndroidWidgetTimePicker extends AndroidWidget('TimePicker)
   object AndroidWidgetAdapterView extends AndroidWidget('AdapterView)
+  object AndroidWidgetListAdapter extends AndroidWidget('ListAdapter)
+  object AndroidWidgetArrayAdapter extends AndroidWidget('ArrayAdapter)
+  class AndroidWidgetArrayAdapter(val typeOf: Type) extends AndroidWidget('ArrayAdapter)
   object AndroidViewView extends AndroidView('View)
 
   class AndroidWidgetAdapterView(typ: Symbol) extends AndroidWidget(Symbol("AdapterView." + typ.name))
