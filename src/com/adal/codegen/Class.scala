@@ -79,6 +79,12 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
     _props += p
     if (!p.typeOf.isPrimitive) {
       this <~ Import(p.typeOf)
+      if (p.initVal.isDefined) {
+        this <~ p.initVal.get.code.imports
+      }
+      if (p.init.isDefined) {
+        this <~ p.init.get.imports
+      }
     }
     this
   }
