@@ -103,7 +103,7 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
   }
 
   def apply(args: Value*) =
-    new VEval(this, code"""new $sName()""")
+    new VEval(this, code"""new $sName(${args.map(~_.code).mkString(", ")})""")
 
   override def apply(id: Symbol, args: Value*): Value =
     try {
