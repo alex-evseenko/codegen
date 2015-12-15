@@ -105,6 +105,16 @@ class Class(pkg: Option[Symbol], name: Symbol, val base: Type = JavaLangObject)
   def apply(args: Value*) =
     new VEval(this, code"""new $sName()""")
 
+  override def apply(id: Symbol, args: Value*): Value =
+    try {
+      super.apply(id, args: _*)
+    } catch {
+      case e: IllegalArgumentException =>
+        base(id, args: _*)
+      case _: Throwable =>
+        throw new IllegalArgumentException(s"Class $sName neither contain method nor field ${id.name}")
+    }
+
   override def holder =
 s"""
 ${if (pkg.isDefined) "package "+pkgName+";" else ""}
@@ -112,7 +122,7 @@ ${if (pkg.isDefined) "package "+pkgName+";" else ""}
 ${imports.foldLeft("")((a, i) => a+i+Code.CRLF)}
 
 $qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""} {
-  ${~this('PropsDecl).get}
+  ${~section('PropsDecl).get}
   ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
   ${methods.foldLeft("")((a, m) => a + ~m + CRLF)}
 }
@@ -150,7 +160,7 @@ class InnerClass(val outerClass: Class, name: Symbol, base: Type = JavaLangObjec
   override def holder =
 s"""
 $qualifiers class $sName${if (base.id != 'Object) " extends "+base.sName else ""} {
-  ${~this('PropsDecl).get}
+  ${~section('PropsDecl).get}
   ${nestedClasses.foldLeft("")((a, nested) => a + ~nested + CRLF)}
   ${methods.foldLeft("")((a, m) => a + ~m + CRLF)}
 }

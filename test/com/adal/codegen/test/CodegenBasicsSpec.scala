@@ -61,8 +61,8 @@ EmptyCode object:
   has an empty holder         ${~EmptyCode === ""}
 
 Sectioned Code:
-  has a default section       ${onCreateDialog('Code).isDefined}
-  can locate a section        ${~(new SectionedCode { this += 'init -> $"initcode"})('init).get === "initcode"}
+  has a default section       ${onCreateDialog.section('Code).isDefined}
+  can locate a section        ${~(new SectionedCode { this += 'init -> $"initcode"}).section('init).get === "initcode"}
   generate content of sections ${~new SectionedCode { this += 'init -> $"init"; this += 'listener -> $"code"} === "initcode"}
   retrieves secions as a list ${new SectionedCode {}.sections(0)._1 === 'Code}
   support insertion order of sections ${
@@ -75,7 +75,7 @@ Sectioned Code:
       this += 'inits -> $"init"
       this += 'listeners -> $"listener1" += 'listeners -> $"listener2" += 'listeners -> $"listener3"
     }
-    scode('listeners).get === code"listener1listener2listener3"
+    scode.section('listeners).get === code"listener1listener2listener3"
   }
 
 *Sectioned code is mutable:

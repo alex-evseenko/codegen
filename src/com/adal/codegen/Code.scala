@@ -211,7 +211,7 @@ trait Code {
 
   override def equals(that: Any): Boolean =
     that.isInstanceOf[Code] &&
-    holder == (that.asInstanceOf[Code]).holder
+    holder == that.asInstanceOf[Code].holder
 
   override def hashCode: Int = holder.hashCode()
 
@@ -237,7 +237,7 @@ trait SectionedCode extends Code {
   def code: String =
     sections.foldLeft("")((a, section) => a + ~toCode(section._2))
 
-  def apply(secName: Symbol): Option[Code] =
+  def section(secName: Symbol): Option[Code] =
     if (scs contains secName) {
       Some(toCode(scs(secName)))
     } else {
@@ -248,7 +248,7 @@ trait SectionedCode extends Code {
     llc.foldLeft(code"")((c, lc) => c ++ lc())
 
   def +=(secName: Symbol): SectionedCode = {
-    if (this(secName).isEmpty) {
+    if (section(secName).isEmpty) {
       scs += secName -> List()
     }
 
@@ -256,7 +256,7 @@ trait SectionedCode extends Code {
   }
 
   def +=(entry: (Symbol, LCode)): SectionedCode = {
-    if (this(entry._1).isEmpty) {
+    if (section(entry._1).isEmpty) {
       scs += entry._1 -> List(entry._2)
     } else {
       scs(entry._1) = scs(entry._1) :+ entry._2
@@ -461,6 +461,7 @@ trait Callable extends SectionedCode {
 
 object VEval {
   def apply(typ: Type, c: Code): VEval = new VEval(typ, c)
+  def apply(value: Value): VEval = new VEval(value.typeOf, value.code)
 }
 
 class VEval(typ: Type, c: Code) extends Value {
